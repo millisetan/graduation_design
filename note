@@ -1,0 +1,14 @@
+One proxy and multi backend worker.
+    proxy accept request and hand job to worker base on load balancing method.
+    worker accept the job and fork(perfork style) a child or create a thread to finish the job.
+
+Using load balance by request, each worker handle requests proportional to one's ability.
+
+Proxy and worker communicate using a protocol, which I will define later, that support
+    REGISTER: worker register to the proxy with one's needed information(hostname, ability etc).
+    DISPATCH: proxy hands the job to the worker.
+    COMPLETION: worker finished the job either sucessful or not, and return job status and information to proxy.
+    KEEPLIVE: worker send signal to proxy states that it is alive.
+
+Protocol design
+    format, type, etc.
