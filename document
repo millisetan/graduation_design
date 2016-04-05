@@ -2,7 +2,9 @@ Normal procedure:
 Client send request{type:get_worker} to proxy's well-known listenning socket, 
 proxy accept the request, and select a worker, increment worker's request_count.
 Client recieve {IP,Port}, using it to connect the worker,
-Client send request to worker{type:request, ID:hostname+timestamp, file_length, file_md5}, then send the whole file(since file length send before, worker know when to stop recieve),
+Client send request to worker{type:request, ID:hostname+timestamp, file_length, file_md5}, 
+Worker accept request, forker child, return ack{type:ack, child_process_id}.
+Client send the whole file(since file length send before, worker know when to stop recieve),
 Worker forker a child to recieve it, store it as a file, named it hostname+timestamp, caculate md5. 
 Once succeed, worker fork a child and execv the computation program given that data file, store the result file, then terminate.
 Parent process wait child to terminate, and send a header{type:result, file_length, md5}, and then the actual file.
@@ -12,6 +14,13 @@ Proxy recieve the message, decrement worker's request_count.
 Startup:
 Proxy creat two sockets, one interact with clients, another local socket deal with workers(register, notify task success or failure) .
 When worker start up, it register itself to local socket, proxy record the worker, store then as a list, using it when load balancing.
+
+Exception handle:
+Client detect server unresponsible, send request{type:reget_worker, previous worker, child_process},
+Proxy send message to that worker to terminate the child_process. If Proxy find worker unresponsible, mark worker as unresponsible to prevent it from select(all previous client will detect this, and re_request. proxy reselect a worker.
+Worker detect client unresponsible, terminate child process, and tell proxy to decrement request_count. It's upto cient to repair itself, either terminate or re_request.
+
+
 
 
 
