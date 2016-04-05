@@ -19,6 +19,7 @@ Exception handle:
 Client detect server unresponsible, send request{type:reget_worker, previous worker, child_process},
 Proxy send message to that worker to terminate the child_process. If Proxy find worker unresponsible, mark worker as unresponsible to prevent it from select(all previous client will detect this, and re_request. proxy reselect a worker.
 Worker detect client unresponsible, terminate child process, and tell proxy to decrement request_count. It's upto cient to repair itself, either terminate or re_request.
+If proxy failed, all assigned job will complete succesfully because they don't need proxy to interact. But all new request will fail, and worker's task result will also fail.
 
 
 
