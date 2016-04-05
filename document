@@ -1,0 +1,19 @@
+Normal procedure:
+Client send request{type:get_worker} to proxy's well-known listenning socket, 
+proxy accept the request, and select a worker, increment worker's request_count.
+Client recieve {IP,Port}, using it to connect the worker,
+Client send request to worker{type:request, ID:hostname+timestamp, file_length, file_md5}, then send the whole file(since file length send before, worker know when to stop recieve),
+Worker forker a child to recieve it, store it as a file, named it hostname+timestamp, caculate md5. 
+Once succeed, worker fork a child and execv the computation program given that data file, store the result file, then terminate.
+Parent process wait child to terminate, and send a header{type:result, file_length, md5}, and then the actual file.
+Once client successfully ack, worker tell proxy that it has successfully finish a task.
+Proxy recieve the message, decrement worker's request_count.
+
+Startup:
+Proxy creat two sockets, one interact with clients, another local socket deal with workers(register, notify task success or failure) .
+When worker start up, it register itself to local socket, proxy record the worker, store then as a list, using it when load balancing.
+
+
+
+
+
