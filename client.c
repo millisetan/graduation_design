@@ -14,27 +14,20 @@
 
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27015"
-#define DEFAULT_SERVER "adamtam.ml"
+#define SERV_PORT 27015
+#define SERV_ADDR "45.62.113.14"
+#define GET_WORKER 0;
+#define REGET_WORKER 1;
+
 
 int __cdecl senddata(char *dataDath, char *resultPath) 
 {
     WSADATA wsaData;
-    SOCKET ConnectSocket = INVALID_SOCKET;
-    struct addrinfo *result = NULL,
-                    *ptr = NULL,
-                    hints;
-    char recvbuf[DEFAULT_BUFLEN];
-    int iResult;
-    int recvbuflen = DEFAULT_BUFLEN;
-    FILE *inFile;
+    SOCKET servsock = INVALID_SOCKET, workersock = INVALID_SOCKET;
+    char buf[DEFAULT_BUFLEN];
+    struct sockaddr_in servaddr, workeraddr;
+    int child_process, rqst_type = GET_WORKER;
     
-    // Validate the parameters
-    if (argc != 2) {
-        printf("usage: %s server-name\n", argv[0]);
-        return 1;
-    }
-
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
@@ -42,50 +35,46 @@ int __cdecl senddata(char *dataDath, char *resultPath)
         return 1;
     }
 
-    ZeroMemory( &hints, sizeof(hints) );
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-
-    // Resolve the server address and port
-    iResult = getaddrinfo(argv[1], DEFAULT_PORT, &hints, &result);
-    if ( iResult != 0 ) {
-        printf("getaddrinfo failed with error: %d\n", iResult);
+    // Create a SOCKET for connecting to server
+    servsock = socket(AF_INET, SOCK_STREAM, 0);
+    if (servsock == INVALID_SOCKET) {
+        printf("socket failed with error: %ld\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
 
-    // Attempt to connect to an address until one succeeds
-    for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
-
-        // Create a SOCKET for connecting to server
-        ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, 
-            ptr->ai_protocol);
-        if (ConnectSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
-            WSACleanup();
-            return 1;
-        }
-
-        // Connect to server.
-        iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-        if (iResult == SOCKET_ERROR) {
-            closesocket(ConnectSocket);
-            ConnectSocket = INVALID_SOCKET;
-            continue;
-        }
-        break;
+    // Create a SOCKET for connecting to worker
+    workersock = socket(AF_INET, SOCK_STREAM, 0);
+    if (workersock == INVALID_SOCKET) {
+        printf("socket failed with error: %ld\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
     }
 
-    freeaddrinfo(result);
 
-    if (ConnectSocket == INVALID_SOCKET) {
-        printf("Unable to connect to server!\n");
+    // Connect to server.
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(SERV_PORT);
+    servaddr.sin_addr = inet_addr(SERV_ADDR);
+    iResult = connect(ConnectSocket, (struct sockaddr *)servaddr, sizeof(servaddr));
+    if (iResult == SOCKET_ERROR) {
+        printf("socker failed to connect server: %ld\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
 
     // Send an initial buffer
+    if (rqst_type == GET_WORKER) {
+        iResult = send(
+
+    } else if (rqst_type == REGET_WORKER) {
+
+    } else {
+
+    }
+
+
     iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
     if (iResult == SOCKET_ERROR) {
         printf("send failed with error: %d\n", WSAGetLastError());
