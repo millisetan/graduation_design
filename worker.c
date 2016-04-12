@@ -1,39 +1,41 @@
-#include <sys/select.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <netinet/ip.h>
-#include <syslog.h>
-#include <errno.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#define MAX_REQUESTS 10000
-#define PROXY_PORT   56789
-#define PROXY_ADDR   "45.62.113.14"
-#define REGIST       0
-#define ACK_REGIST   1
+#include "server.h"
+#include "rtt.h"
 
 pthread_t ntid;
 pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
-int count;
+pthread_mutex_t mesg_mutex = PTHREAD_MUTEX_INITIALIZER;
+worker this;
+int pre_load, proxyfd;
+request_t request;
+response_t response;
+Dg_send_recv(int fd, const void *outbuff, size_t outbytes,
+             void *inbuff, size_t inbytes,
+             const SA *destaddr, socklen_t destlen);
 
 void *request_counter(void *arg)
 {
-    int status;
+    int status, diff;
     for ( ; ; ) {
         if (waitpid(-1, &status, 0) == -1) {
             continue;
         }
-        pthread_mutex_lock(&count_mutex);
-        count--;
-        pthread_mutex_unlock(&count_mutex);
+        Pthread_mutex_lock(&count_mutex);
+        this.load--;
+        diff = load - pre_load;
+        Pthread_mutex_unlock(&count_mutex);
         /* foward count to proxy */
+        if ((diff > -7) && (diff < 7)) continue;
 
+        update *update_tmp = &request;
+        update->type = UPDT;
+        update->index = this.index;
+        update->passwd = this.passwd;
+        Pthread_mutex_lock(&mesg_mutex);
+        
+        Dg_send_recv(proxyfd, &request, sizeof(request), &response, 
+                    sizeof(response), &proxyaddr, sizeof(proxyaddr));
+        Pthread_mutex_unlock(&mesg_mutex);
+        update *update_ack_tmp = &response;
     }
 }
 
@@ -43,7 +45,7 @@ int main(int argc, char **argv)
     char regist = REGIST;
     char buf[BUF_SIZE];
     ssize_t len;
-    int listenfd, connfd, proxyfd;
+    int listenfd, connfd;
     long timestamp = random();
     pid_t childpid;
     struct sockaddr_in workeraddr, proxyaddr;
@@ -54,50 +56,36 @@ int main(int argc, char **argv)
 
 
     /* creat a worker */
-    if ( (listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        syslog(LOG_EMERG, "socket creation failed\n");
-        exit(1);
-    }
+    listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 
-    if (listen(listenfd, MAX_REQUESTS) == -1) {
-        syslog(LOG_EMERG, "socket listenning failed\n");
-        exit(1);
-    }
+    Listen(listenfd, MAX_REQUESTS);
 
     workerlen = sizeof(workeraddr);
-    if (getsockname(listenfd, (struct sockaddr *)&workeraddr, &workerlen) == -1) {
-        syslog(LOG_EMERG, "getting listenfd socket failed\n");
-        exit(1);
-    }
+    Getsockname(listenfd, (struct sockaddr *)&workeraddr, &workerlen);
 
     /* connect to server and register */
-    if ( (proxyfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        syslog(LOG_EMERG, "proxy socket creation failed\n");
-        exit(1);
-    }
+    proxyfd = Socket(AF_INET, SOCK_STREAM, 0);
     memset(&proxyaddr, 0, sizeof(proxyaddr));
     proxyaddr.sin_family = AF_INET;
     proxyaddr.sin_port = htons(PROXY_PORT);
     inet_pton(AF_INET, PROXY_ADDR, &proxyaddr.sin_addr);
 
-    if (sendto(proxyfd, (struct sockaddr *)&proxyaddr, sizeof(proxyaddr)) == -1) {
-        syslog(LOG_EMERG, "connecting to proxy failed\n");
-        exit(1);
-    }
-    /* register from proxy */
-    send(proxyfd, &regist, sizeof(char), 0);
-    timestamp++;
-    send(proxyfd, &timestamp, sizeof(long), 0);
-    send(proxyfd, &workeraddr, workerlen, 0);
-    do {
-        recv(proxyfd, buf, 1, 0);
-    while (*(char *)buf != ACK_REGIST)
+    regist *regist_tmp = &request;
+    regist_tmp->type = RGST;
+    regist_tmp->port = (uint16_t)workeraddr.sin_port;
+    regist_tmp->addr = (uint32_t)workeraddr.sin_addr;
+    Dg_send_recv(proxyfd, &request, sizeof(request), &response, 
+                sizeof(response), &proxyaddr, sizeof(proxyaddr));
+    regist_ack *regist_ack_tmp = &response;
+    this.passwd = regist_ack_tmp->passwd;
+    this.index  = regist_ack_tmp->index;
+    this.load   = 0;
+    this.status = WKR_RDY;
+    regist_ack_tmp->port = (uint16_t)workeraddr.sin_port;
+    regist_ack_tmp->addr = (uint32_t)workeraddr.sin_addr;
 
-    int err = pthread_create(&ntid, NULL, request_counter, NULL);
-    if (err != 0) {
-        syslog(LOG_EMERG, "thread request_counter creation failed\n");
-        exit(1);
-    }
+    Pthread_create(&ntid, NULL, request_counter, NULL);
+
     for( ; ; ) {
         if ( (connfd = accept(listenfd, NULL, NULL)) == -1) {
             if (errno == EINTR)
