@@ -16,7 +16,7 @@
  *warning: passing arg 2 of `connect' discards `const' from pointer target type
  */
 
-#include	"unp.h"
+#include	"server.h"
 
 void *
 Calloc(size_t n, size_t size)
@@ -88,23 +88,6 @@ Malloc(size_t size)
 	if ( (ptr = malloc(size)) == NULL)
 		err_sys("malloc error");
 	return(ptr);
-}
-
-int
-Mkstemp(char *template)
-{
-	int i;
-
-#ifdef HAVE_MKSTEMP
-	if ((i = mkstemp(template)) < 0)
-		err_quit("mkstemp error");
-#else
-	if (mktemp(template) == NULL || template[0] == 0)
-		err_quit("mktemp error");
-	i = Open(template, O_CREAT | O_WRONLY, FILE_MODE);
-#endif
-
-	return i;
 }
 
 #include	<sys/mman.h>

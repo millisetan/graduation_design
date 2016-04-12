@@ -1,5 +1,5 @@
 /* include dgsendrecv1 */
-#include	"unprtt.h"
+#include	"rtt.h"
 #include	<setjmp.h>
 
 #define	RTT_DEBUG
@@ -50,7 +50,7 @@ dg_send_recv(int fd, const void *outbuff, size_t outbytes,
 /* end dgsendrecv1 */
 
 /* include dgsendrecv2 */
-	Signal(SIGALRM, sig_alrm);
+	signal(SIGALRM, sig_alrm);
 	rtt_newpack(&rttinfo);		/* initialize for this packet */
 
 sendagain:

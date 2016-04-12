@@ -1,0 +1,13 @@
+CC=gcc
+CFLAG=-Iinclude/ -Wall
+
+LIB_SOURCE=error.c error.c  rtt.c  send_recv.c  wraplib.c  wrappthread.c  wrapsock.c  wrapstdio.c  wrapunix.c
+LIB_OBJECT=$(LIB_SOURCES:.c=.o)
+worker: worker.o 
+
+server:
+
+client:
+
+.c.o:
+	$(CC) 

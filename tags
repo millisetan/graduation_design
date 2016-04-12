@@ -1,0 +1,511 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AF_LOCAL	include/unp.h	173;"	d
+Accept	include/unp.h	/^int		 Accept(int, SA *, socklen_t *);$/;"	p	signature:(int, SA *, socklen_t *)
+Accept	src/util/wrapsock.c	/^Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)$/;"	f	signature:(int fd, struct sockaddr *sa, socklen_t *salenptr)
+BUFFSIZE	include/unp.h	197;"	d
+BUILDDIR	Makefile	/^BUILDDIR := build$/;"	m
+Bind	include/unp.h	/^void	 Bind(int, const SA *, socklen_t);$/;"	p	signature:(int, const SA *, socklen_t)
+Bind	src/util/wrapsock.c	/^Bind(int fd, const struct sockaddr *sa, socklen_t salen)$/;"	f	signature:(int fd, const struct sockaddr *sa, socklen_t salen)
+CC	Makefile	/^CC := gcc # This is the main compiler$/;"	m
+CFLAGS	Makefile	/^CFLAGS := -Wall$/;"	m
+CMSG_LEN	include/unp.h	154;"	d
+CMSG_SPACE	include/unp.h	158;"	d
+Calloc	include/unp.h	/^void	*Calloc(size_t, size_t);$/;"	p	signature:(size_t, size_t)
+Calloc	src/util/wrapunix.c	/^Calloc(size_t n, size_t size)$/;"	f	signature:(size_t n, size_t size)
+Close	include/unp.h	/^void	 Close(int);$/;"	p	signature:(int)
+Close	src/util/wrapunix.c	/^Close(int fd)$/;"	f	signature:(int fd)
+Connect	include/unp.h	/^void	 Connect(int, const SA *, socklen_t);$/;"	p	signature:(int, const SA *, socklen_t)
+Connect	src/util/wrapsock.c	/^Connect(int fd, const struct sockaddr *sa, socklen_t salen)$/;"	f	signature:(int fd, const struct sockaddr *sa, socklen_t salen)
+Connect_timeo	include/unp.h	/^void	 Connect_timeo(int, const SA *, socklen_t, int);$/;"	p	signature:(int, const SA *, socklen_t, int)
+DEFAULT_BUFLEN	src/client.c	16;"	d	file:
+DIR_MODE	include/unp.h	240;"	d
+Dg_send_recv	src/util/send_recv.c	/^Dg_send_recv(int fd, const void *outbuff, size_t outbytes,$/;"	f	signature:(int fd, const void *outbuff, size_t outbytes, void *inbuff, size_t inbytes, const SA *destaddr, socklen_t destlen)
+Dup2	include/unp.h	/^void	 Dup2(int, int);$/;"	p	signature:(int, int)
+Dup2	src/util/wrapunix.c	/^Dup2(int fd1, int fd2)$/;"	f	signature:(int fd1, int fd2)
+FILE_MODE	include/unp.h	238;"	d
+Family_to_level	include/unp.h	/^int		 Family_to_level(int);$/;"	p	signature:(int)
+Fclose	include/unp.h	/^void	 Fclose(FILE *);$/;"	p	signature:(FILE *)
+Fclose	src/util/wrapstdio.c	/^Fclose(FILE *fp)$/;"	f	signature:(FILE *fp)
+Fcntl	include/unp.h	/^int		 Fcntl(int, int, int);$/;"	p	signature:(int, int, int)
+Fcntl	src/util/wrapunix.c	/^Fcntl(int fd, int cmd, int arg)$/;"	f	signature:(int fd, int cmd, int arg)
+Fdopen	include/unp.h	/^FILE	*Fdopen(int, const char *);$/;"	p	signature:(int, const char *)
+Fdopen	src/util/wrapstdio.c	/^Fdopen(int fd, const char *type)$/;"	f	signature:(int fd, const char *type)
+Fgets	include/unp.h	/^char	*Fgets(char *, int, FILE *);$/;"	p	signature:(char *, int, FILE *)
+Fgets	src/util/wrapstdio.c	/^Fgets(char *ptr, int n, FILE *stream)$/;"	f	signature:(char *ptr, int n, FILE *stream)
+Fopen	include/unp.h	/^FILE	*Fopen(const char *, const char *);$/;"	p	signature:(const char *, const char *)
+Fopen	src/util/wrapstdio.c	/^Fopen(const char *filename, const char *mode)$/;"	f	signature:(const char *filename, const char *mode)
+Fork	include/unp.h	/^pid_t	 Fork(void);$/;"	p	signature:(void)
+Fork	src/util/wrapunix.c	/^Fork(void)$/;"	f	signature:(void)
+Fputs	include/unp.h	/^void	 Fputs(const char *, FILE *);$/;"	p	signature:(const char *, FILE *)
+Fputs	src/util/wrapstdio.c	/^Fputs(const char *ptr, FILE *stream)$/;"	f	signature:(const char *ptr, FILE *stream)
+GET	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	e	enum:__anon1
+GET_WORKER	src/client.c	19;"	d	file:
+Getpeername	include/unp.h	/^void	 Getpeername(int, SA *, socklen_t *);$/;"	p	signature:(int, SA *, socklen_t *)
+Getpeername	src/util/wrapsock.c	/^Getpeername(int fd, struct sockaddr *sa, socklen_t *salenptr)$/;"	f	signature:(int fd, struct sockaddr *sa, socklen_t *salenptr)
+Getsockname	include/unp.h	/^void	 Getsockname(int, SA *, socklen_t *);$/;"	p	signature:(int, SA *, socklen_t *)
+Getsockname	src/util/wrapsock.c	/^Getsockname(int fd, struct sockaddr *sa, socklen_t *salenptr)$/;"	f	signature:(int fd, struct sockaddr *sa, socklen_t *salenptr)
+Getsockopt	include/unp.h	/^void	 Getsockopt(int, int, int, void *, socklen_t *);$/;"	p	signature:(int, int, int, void *, socklen_t *)
+Getsockopt	src/util/wrapsock.c	/^Getsockopt(int fd, int level, int optname, void *optval, socklen_t *optlenptr)$/;"	f	signature:(int fd, int level, int optname, void *optval, socklen_t *optlenptr)
+Gettimeofday	include/unp.h	/^void	 Gettimeofday(struct timeval *, void *);$/;"	p	signature:(struct timeval *, void *)
+Gettimeofday	src/util/wrapunix.c	/^Gettimeofday(struct timeval *tv, void *foo)$/;"	f	signature:(struct timeval *tv, void *foo)
+Host_serv	include/unp.h	/^struct addrinfo *Host_serv(const char *, const char *, int, int);$/;"	p	signature:(const char *, const char *, int, int)
+INADDR_NONE	include/unp.h	98;"	d
+INC	Makefile	/^INC := -I include$/;"	m
+INET6_ADDRSTRLEN	include/unp.h	121;"	d
+INET_ADDRSTRLEN	include/unp.h	113;"	d
+INFTIM	include/unp.h	184;"	d
+INFTIM_UNPH	include/unp.h	187;"	d
+If_indextoname	include/unp.h	/^char			*If_indextoname(unsigned int, char *);$/;"	p	signature:(unsigned int, char *)
+If_nameindex	include/unp.h	/^struct if_nameindex	*If_nameindex(void);$/;"	p	signature:(void)
+If_nametoindex	include/unp.h	/^unsigned int		 If_nametoindex(const char *);$/;"	p	signature:(const char *)
+Inet6_rth_add	include/unp.h	/^void	 Inet6_rth_add(void *, const struct in6_addr *);$/;"	p	signature:(void *, const struct in6_addr *)
+Inet6_rth_add	src/util/wrapsock.c	/^Inet6_rth_add(void *rthbuf, const struct in6_addr *addr)$/;"	f	signature:(void *rthbuf, const struct in6_addr *addr)
+Inet6_rth_getaddr	include/unp.h	/^struct in6_addr *Inet6_rth_getaddr(const void *, int);$/;"	p	signature:(const void *, int)
+Inet6_rth_getaddr	src/util/wrapsock.c	/^Inet6_rth_getaddr(const void *rthbuf, int idx)$/;"	f	signature:(const void *rthbuf, int idx)
+Inet6_rth_init	include/unp.h	/^void	*Inet6_rth_init(void *, socklen_t, int, int);$/;"	p	signature:(void *, socklen_t, int, int)
+Inet6_rth_init	src/util/wrapsock.c	/^Inet6_rth_init(void *rthbuf, socklen_t rthlen, int type, int segments)$/;"	f	signature:(void *rthbuf, socklen_t rthlen, int type, int segments)
+Inet6_rth_reverse	include/unp.h	/^void	 Inet6_rth_reverse(const void *, void *);$/;"	p	signature:(const void *, void *)
+Inet6_rth_reverse	src/util/wrapsock.c	/^Inet6_rth_reverse(const void *in, void *out)$/;"	f	signature:(const void *in, void *out)
+Inet6_rth_segments	include/unp.h	/^int		 Inet6_rth_segments(const void *);$/;"	p	signature:(const void *)
+Inet6_rth_segments	src/util/wrapsock.c	/^Inet6_rth_segments(const void *rthbuf)$/;"	f	signature:(const void *rthbuf)
+Inet6_rth_space	include/unp.h	/^int		 Inet6_rth_space(int, int);$/;"	p	signature:(int, int)
+Inet6_rth_space	src/util/wrapsock.c	/^Inet6_rth_space(int type, int segments)$/;"	f	signature:(int type, int segments)
+Inet_ntop	include/unp.h	/^const char		*Inet_ntop(int, const void *, char *, size_t);$/;"	p	signature:(int, const void *, char *, size_t)
+Inet_ntop	src/util/wraplib.c	/^Inet_ntop(int family, const void *addrptr, char *strptr, size_t len)$/;"	f	signature:(int family, const void *addrptr, char *strptr, size_t len)
+Inet_pton	include/unp.h	/^void			 Inet_pton(int, const char *, void *);$/;"	p	signature:(int, const char *, void *)
+Inet_pton	src/util/wraplib.c	/^Inet_pton(int family, const char *strptr, void *addrptr)$/;"	f	signature:(int family, const char *strptr, void *addrptr)
+Ioctl	include/unp.h	/^int		 Ioctl(int, int, void *);$/;"	p	signature:(int, int, void *)
+Ioctl	src/util/wrapunix.c	/^Ioctl(int fd, int request, void *arg)$/;"	f	signature:(int fd, int request, void *arg)
+Kevent	include/unp.h	/^int		 Kevent(int, const struct kevent *, int,$/;"	p	signature:(int, const struct kevent *, int, struct kevent *, int, const struct timespec *)
+Kevent	src/util/wrapsock.c	/^Kevent(int kq, const struct kevent *changelist, int nchanges,$/;"	f	signature:(int kq, const struct kevent *changelist, int nchanges, struct kevent *eventlist, int nevents, const struct timespec *timeout)
+Kqueue	include/unp.h	/^int		 Kqueue(void);$/;"	p	signature:(void)
+Kqueue	src/util/wrapsock.c	/^Kqueue(void)$/;"	f	signature:(void)
+LIB	Makefile	/^LIB := -lpthread$/;"	m
+LISTENQ	include/unp.h	193;"	d
+Listen	include/unp.h	/^void	 Listen(int, int);$/;"	p	signature:(int, int)
+Listen	src/util/wrapsock.c	/^Listen(int fd, int backlog)$/;"	f	signature:(int fd, int backlog)
+MAINSRCDIR	Makefile	/^MAINSRCDIR := src$/;"	m
+MAXLINE	include/unp.h	196;"	d
+MAX_REQUESTS	include/server.h	18;"	d
+MAX_WORKER	include/server.h	19;"	d
+MESG_LEN	include/server.h	24;"	d
+Malloc	include/unp.h	/^void	*Malloc(size_t);$/;"	p	signature:(size_t)
+Malloc	src/util/wrapunix.c	/^Malloc(size_t size)$/;"	f	signature:(size_t size)
+Mcast_block_source	include/unp.h	/^void	 Mcast_block_source(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+Mcast_get_if	include/unp.h	/^int		 Mcast_get_if(int);$/;"	p	signature:(int)
+Mcast_get_loop	include/unp.h	/^int		 Mcast_get_loop(int);$/;"	p	signature:(int)
+Mcast_get_ttl	include/unp.h	/^int		 Mcast_get_ttl(int);$/;"	p	signature:(int)
+Mcast_join	include/unp.h	/^void	 Mcast_join(int, const SA *, socklen_t, const char *, u_int);$/;"	p	signature:(int, const SA *, socklen_t, const char *, u_int)
+Mcast_join_source_group	include/unp.h	/^void	 Mcast_join_source_group(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen, const char *ifname, u_int ifindex)
+Mcast_leave	include/unp.h	/^void	 Mcast_leave(int, const SA *, socklen_t);$/;"	p	signature:(int, const SA *, socklen_t)
+Mcast_leave_source_group	include/unp.h	/^void	 Mcast_leave_source_group(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+Mcast_set_if	include/unp.h	/^void	 Mcast_set_if(int, const char *, u_int);$/;"	p	signature:(int, const char *, u_int)
+Mcast_set_loop	include/unp.h	/^void	 Mcast_set_loop(int, int);$/;"	p	signature:(int, int)
+Mcast_set_ttl	include/unp.h	/^void	 Mcast_set_ttl(int, int);$/;"	p	signature:(int, int)
+Mcast_unblock_source	include/unp.h	/^void	 Mcast_unblock_source(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+Mkstemp	include/unp.h	/^int	 Mkstemp(char *);$/;"	p	signature:(char *)
+Mkstemp	src/util/wrapunix.c	/^Mkstemp(char *template)$/;"	f	signature:(char *template)
+Mmap	include/unp.h	/^void	*Mmap(void *, size_t, int, int, int, off_t);$/;"	p	signature:(void *, size_t, int, int, int, off_t)
+Mmap	src/util/wrapunix.c	/^Mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)$/;"	f	signature:(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
+My_addrs	include/unp.h	/^char   **My_addrs(int *);$/;"	p	signature:(int *)
+OBJECTS	Makefile	/^OBJECTS := $(patsubst $(SRCDIR)\/%,$(BUILDDIR)\/%,$(SOURCES:.$(SRSRCEXT)=.o))$/;"	m
+Open	include/unp.h	/^int		 Open(const char *, int, mode_t);$/;"	p	signature:(const char *, int, mode_t)
+Open	src/util/wrapunix.c	/^Open(const char *pathname, int oflag, mode_t mode)$/;"	f	signature:(const char *pathname, int oflag, mode_t mode)
+PF_LOCAL	include/unp.h	176;"	d
+PROXY_IP	include/server.h	23;"	d
+PROXY_PORT	include/server.h	22;"	d
+Pipe	include/unp.h	/^void	 Pipe(int *fds);$/;"	p	signature:(int *fds)
+Pipe	src/util/wrapunix.c	/^Pipe(int *fds)$/;"	f	signature:(int *fds)
+Poll	include/unp.h	/^int		 Poll(struct pollfd *, unsigned long, int);$/;"	p	signature:(struct pollfd *, unsigned long, int)
+Poll	src/util/wrapsock.c	/^Poll(struct pollfd *fdarray, unsigned long nfds, int timeout)$/;"	f	signature:(struct pollfd *fdarray, unsigned long nfds, int timeout)
+Pthread_cond_broadcast	src/util/wrappthread.c	/^Pthread_cond_broadcast(pthread_cond_t *cptr)$/;"	f	signature:(pthread_cond_t *cptr)
+Pthread_cond_signal	src/util/wrappthread.c	/^Pthread_cond_signal(pthread_cond_t *cptr)$/;"	f	signature:(pthread_cond_t *cptr)
+Pthread_cond_timedwait	src/util/wrappthread.c	/^Pthread_cond_timedwait(pthread_cond_t *cptr, pthread_mutex_t *mptr,$/;"	f	signature:(pthread_cond_t *cptr, pthread_mutex_t *mptr, const struct timespec *tsptr)
+Pthread_cond_wait	src/util/wrappthread.c	/^Pthread_cond_wait(pthread_cond_t *cptr, pthread_mutex_t *mptr)$/;"	f	signature:(pthread_cond_t *cptr, pthread_mutex_t *mptr)
+Pthread_create	src/util/wrappthread.c	/^Pthread_create(pthread_t *tid, const pthread_attr_t *attr,$/;"	f	signature:(pthread_t *tid, const pthread_attr_t *attr, void * (*func)(void *), void *arg)
+Pthread_detach	src/util/wrappthread.c	/^Pthread_detach(pthread_t tid)$/;"	f	signature:(pthread_t tid)
+Pthread_join	src/util/wrappthread.c	/^Pthread_join(pthread_t tid, void **status)$/;"	f	signature:(pthread_t tid, void **status)
+Pthread_key_create	src/util/wrappthread.c	/^Pthread_key_create(pthread_key_t *key, void (*func)(void *))$/;"	f	signature:(pthread_key_t *key, void (*func)(void *))
+Pthread_kill	src/util/wrappthread.c	/^Pthread_kill(pthread_t tid, int signo)$/;"	f	signature:(pthread_t tid, int signo)
+Pthread_mutex_init	src/util/wrappthread.c	/^Pthread_mutex_init(pthread_mutex_t *mptr, pthread_mutexattr_t *attr)$/;"	f	signature:(pthread_mutex_t *mptr, pthread_mutexattr_t *attr)
+Pthread_mutex_lock	src/util/wrappthread.c	/^Pthread_mutex_lock(pthread_mutex_t *mptr)$/;"	f	signature:(pthread_mutex_t *mptr)
+Pthread_mutex_unlock	src/util/wrappthread.c	/^Pthread_mutex_unlock(pthread_mutex_t *mptr)$/;"	f	signature:(pthread_mutex_t *mptr)
+Pthread_mutexattr_init	src/util/wrappthread.c	/^Pthread_mutexattr_init(pthread_mutexattr_t *attr)$/;"	f	signature:(pthread_mutexattr_t *attr)
+Pthread_mutexattr_setpshared	src/util/wrappthread.c	/^Pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int flag)$/;"	f	signature:(pthread_mutexattr_t *attr, int flag)
+Pthread_once	src/util/wrappthread.c	/^Pthread_once(pthread_once_t *ptr, void (*func)(void))$/;"	f	signature:(pthread_once_t *ptr, void (*func)(void))
+Pthread_setspecific	src/util/wrappthread.c	/^Pthread_setspecific(pthread_key_t key, const void *value)$/;"	f	signature:(pthread_key_t key, const void *value)
+REGET	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	e	enum:__anon1
+REGET_WORKER	src/client.c	20;"	d	file:
+RGST	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	e	enum:__anon1
+RTT_DEBUG	src/util/send_recv.c	5;"	d	file:
+RTT_MAXNREXMT	include/rtt.h	17;"	d
+RTT_RTOCALC	src/util/rtt.c	10;"	d	file:
+RTT_RXTMAX	include/rtt.h	16;"	d
+RTT_RXTMIN	include/rtt.h	15;"	d
+Read	include/unp.h	/^ssize_t	 Read(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+Read	src/util/wrapunix.c	/^Read(int fd, void *ptr, size_t nbytes)$/;"	f	signature:(int fd, void *ptr, size_t nbytes)
+Read_fd	include/unp.h	/^ssize_t	 Read_fd(int, void *, size_t, int *);$/;"	p	signature:(int, void *, size_t, int *)
+Readable_timeo	include/unp.h	/^int		 Readable_timeo(int, int);$/;"	p	signature:(int, int)
+Readline	include/unp.h	/^ssize_t	 Readline(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+Readn	include/unp.h	/^ssize_t	 Readn(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+Recv	include/unp.h	/^ssize_t	 Recv(int, void *, size_t, int);$/;"	p	signature:(int, void *, size_t, int)
+Recv	src/util/wrapsock.c	/^Recv(int fd, void *ptr, size_t nbytes, int flags)$/;"	f	signature:(int fd, void *ptr, size_t nbytes, int flags)
+Recvfrom	include/unp.h	/^ssize_t	 Recvfrom(int, void *, size_t, int, SA *, socklen_t *);$/;"	p	signature:(int, void *, size_t, int, SA *, socklen_t *)
+Recvfrom	src/util/wrapsock.c	/^Recvfrom(int fd, void *ptr, size_t nbytes, int flags,$/;"	f	signature:(int fd, void *ptr, size_t nbytes, int flags, struct sockaddr *sa, socklen_t *salenptr)
+Recvfrom_flags	include/unp.h	/^ssize_t	 Recvfrom_flags(int, void *, size_t, int *, SA *, socklen_t *,$/;"	p	signature:(int, void *, size_t, int *, SA *, socklen_t *, struct unp_in_pktinfo *)
+Recvmsg	include/unp.h	/^ssize_t	 Recvmsg(int, struct msghdr *, int);$/;"	p	signature:(int, struct msghdr *, int)
+Recvmsg	src/util/wrapsock.c	/^Recvmsg(int fd, struct msghdr *msg, int flags)$/;"	f	signature:(int fd, struct msghdr *msg, int flags)
+SA	include/unp.h	212;"	d
+SERV_ADDR	src/client.c	18;"	d	file:
+SERV_IP	include/server.h	21;"	d
+SERV_PORT	include/server.h	20;"	d
+SERV_PORT	include/unp.h	200;"	d
+SERV_PORT	src/client.c	17;"	d	file:
+SERV_PORT_STR	include/unp.h	201;"	d
+SHUT_RD	include/unp.h	102;"	d
+SHUT_RDWR	include/unp.h	104;"	d
+SHUT_WR	include/unp.h	103;"	d
+SOURCES	Makefile	/^SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))$/;"	m
+SRCDIR	Makefile	/^SRCDIR := src\/util$/;"	m
+SRCEXT	Makefile	/^SRCEXT := c$/;"	m
+SUN_LEN	include/unp.h	166;"	d
+Select	include/unp.h	/^int		 Select(int, fd_set *, fd_set *, fd_set *, struct timeval *);$/;"	p	signature:(int, fd_set *, fd_set *, fd_set *, struct timeval *)
+Select	src/util/wrapsock.c	/^Select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,$/;"	f	signature:(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
+Send	include/unp.h	/^void	 Send(int, const void *, size_t, int);$/;"	p	signature:(int, const void *, size_t, int)
+Send	src/util/wrapsock.c	/^Send(int fd, const void *ptr, size_t nbytes, int flags)$/;"	f	signature:(int fd, const void *ptr, size_t nbytes, int flags)
+Sendmsg	include/unp.h	/^void	 Sendmsg(int, const struct msghdr *, int);$/;"	p	signature:(int, const struct msghdr *, int)
+Sendmsg	src/util/wrapsock.c	/^Sendmsg(int fd, const struct msghdr *msg, int flags)$/;"	f	signature:(int fd, const struct msghdr *msg, int flags)
+Sendto	include/unp.h	/^void	 Sendto(int, const void *, size_t, int, const SA *, socklen_t);$/;"	p	signature:(int, const void *, size_t, int, const SA *, socklen_t)
+Sendto	src/util/wrapsock.c	/^Sendto(int fd, const void *ptr, size_t nbytes, int flags,$/;"	f	signature:(int fd, const void *ptr, size_t nbytes, int flags, const struct sockaddr *sa, socklen_t salen)
+Setsockopt	include/unp.h	/^void	 Setsockopt(int, int, int, const void *, socklen_t);$/;"	p	signature:(int, int, int, const void *, socklen_t)
+Setsockopt	src/util/wrapsock.c	/^Setsockopt(int fd, int level, int optname, const void *optval, socklen_t optlen)$/;"	f	signature:(int fd, int level, int optname, const void *optval, socklen_t optlen)
+Shutdown	include/unp.h	/^void	 Shutdown(int, int);$/;"	p	signature:(int, int)
+Shutdown	src/util/wrapsock.c	/^Shutdown(int fd, int how)$/;"	f	signature:(int fd, int how)
+Sigaddset	include/unp.h	/^void	 Sigaddset(sigset_t *, int);$/;"	p	signature:(sigset_t *, int)
+Sigaddset	src/util/wrapunix.c	/^Sigaddset(sigset_t *set, int signo)$/;"	f	signature:(sigset_t *set, int signo)
+Sigdelset	include/unp.h	/^void	 Sigdelset(sigset_t *, int);$/;"	p	signature:(sigset_t *, int)
+Sigdelset	src/util/wrapunix.c	/^Sigdelset(sigset_t *set, int signo)$/;"	f	signature:(sigset_t *set, int signo)
+Sigemptyset	include/unp.h	/^void	 Sigemptyset(sigset_t *);$/;"	p	signature:(sigset_t *)
+Sigemptyset	src/util/wrapunix.c	/^Sigemptyset(sigset_t *set)$/;"	f	signature:(sigset_t *set)
+Sigfillset	include/unp.h	/^void	 Sigfillset(sigset_t *);$/;"	p	signature:(sigset_t *)
+Sigfillset	src/util/wrapunix.c	/^Sigfillset(sigset_t *set)$/;"	f	signature:(sigset_t *set)
+Sigfunc	include/unp.h	/^typedef	void	Sigfunc(int);	\/* for signal handlers *\/$/;"	t
+Sigismember	include/unp.h	/^int		 Sigismember(const sigset_t *, int);$/;"	p	signature:(const sigset_t *, int)
+Sigismember	src/util/wrapunix.c	/^Sigismember(const sigset_t *set, int signo)$/;"	f	signature:(const sigset_t *set, int signo)
+Signal	include/unp.h	/^Sigfunc *Signal(int, Sigfunc *);$/;"	p	signature:(int, Sigfunc *)
+Signal_intr	include/unp.h	/^Sigfunc *Signal_intr(int, Sigfunc *);$/;"	p	signature:(int, Sigfunc *)
+Sigpending	include/unp.h	/^void	 Sigpending(sigset_t *);$/;"	p	signature:(sigset_t *)
+Sigpending	src/util/wrapunix.c	/^Sigpending(sigset_t *set)$/;"	f	signature:(sigset_t *set)
+Sigprocmask	include/unp.h	/^void	 Sigprocmask(int, const sigset_t *, sigset_t *);$/;"	p	signature:(int, const sigset_t *, sigset_t *)
+Sigprocmask	src/util/wrapunix.c	/^Sigprocmask(int how, const sigset_t *set, sigset_t *oset)$/;"	f	signature:(int how, const sigset_t *set, sigset_t *oset)
+Sock_bind_wild	include/unp.h	/^int		 Sock_bind_wild(int, int);$/;"	p	signature:(int, int)
+Sock_ntop	include/unp.h	/^char	*Sock_ntop(const SA *, socklen_t);$/;"	p	signature:(const SA *, socklen_t)
+Sock_ntop_host	include/unp.h	/^char	*Sock_ntop_host(const SA *, socklen_t);$/;"	p	signature:(const SA *, socklen_t)
+Sockatmark	include/unp.h	/^int		 Sockatmark(int);$/;"	p	signature:(int)
+Sockatmark	src/util/wrapsock.c	/^Sockatmark(int fd)$/;"	f	signature:(int fd)
+Socket	include/unp.h	/^int		 Socket(int, int, int);$/;"	p	signature:(int, int, int)
+Socket	src/util/wrapsock.c	/^Socket(int family, int type, int protocol)$/;"	f	signature:(int family, int type, int protocol)
+Socketpair	include/unp.h	/^void	 Socketpair(int, int, int, int *);$/;"	p	signature:(int, int, int, int *)
+Socketpair	src/util/wrapsock.c	/^Socketpair(int family, int type, int protocol, int *fd)$/;"	f	signature:(int family, int type, int protocol, int *fd)
+Sockfd_to_family	include/unp.h	/^int		 Sockfd_to_family(int);$/;"	p	signature:(int)
+Strdup	include/unp.h	/^char	*Strdup(const char *);$/;"	p	signature:(const char *)
+Strdup	src/util/wrapunix.c	/^Strdup(const char *str)$/;"	f	signature:(const char *str)
+Sysconf	include/unp.h	/^long	 Sysconf(int);$/;"	p	signature:(int)
+Sysconf	src/util/wrapunix.c	/^Sysconf(int name)$/;"	f	signature:(int name)
+Sysctl	include/unp.h	/^void	 Sysctl(int *, u_int, void *, size_t *, void *, size_t);$/;"	p	signature:(int *, u_int, void *, size_t *, void *, size_t)
+Sysctl	src/util/wrapunix.c	/^Sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp,$/;"	f	signature:(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen)
+TARGET1	Makefile	/^TARGET1 := bin\/worker$/;"	m
+TARGET2	Makefile	/^TARGET2 := bin\/proxy$/;"	m
+TARGET3	Makefile	/^TARGET3 := bin\/client$/;"	m
+Tcp_connect	include/unp.h	/^int		 Tcp_connect(const char *, const char *);$/;"	p	signature:(const char *, const char *)
+Tcp_listen	include/unp.h	/^int		 Tcp_listen(const char *, const char *, socklen_t *);$/;"	p	signature:(const char *, const char *, socklen_t *)
+UNIXDG_PATH	include/unp.h	203;"	d
+UNIXSTR_PATH	include/unp.h	202;"	d
+UPDT	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	e	enum:__anon1
+Udp_client	include/unp.h	/^int		 Udp_client(const char *, const char *, SA **, socklen_t *);$/;"	p	signature:(const char *, const char *, SA **, socklen_t *)
+Udp_connect	include/unp.h	/^int		 Udp_connect(const char *, const char *);$/;"	p	signature:(const char *, const char *)
+Udp_server	include/unp.h	/^int		 Udp_server(const char *, const char *, socklen_t *);$/;"	p	signature:(const char *, const char *, socklen_t *)
+Unlink	include/unp.h	/^void	 Unlink(const char *);$/;"	p	signature:(const char *)
+Unlink	src/util/wrapunix.c	/^Unlink(const char *pathname)$/;"	f	signature:(const char *pathname)
+WIN32_LEAN_AND_MEAN	src/client.c	1;"	d	file:
+WKR_FLD	include/server.h	100;"	d
+WKR_OVL	include/server.h	102;"	d
+WKR_RDY	include/server.h	101;"	d
+Wait	include/unp.h	/^pid_t	 Wait(int *);$/;"	p	signature:(int *)
+Wait	src/util/wrapunix.c	/^Wait(int *iptr)$/;"	f	signature:(int *iptr)
+Waitpid	include/unp.h	/^pid_t	 Waitpid(pid_t, int *, int);$/;"	p	signature:(pid_t, int *, int)
+Waitpid	src/util/wrapunix.c	/^Waitpid(pid_t pid, int *iptr, int options)$/;"	f	signature:(pid_t pid, int *iptr, int options)
+Writable_timeo	include/unp.h	/^int		 Writable_timeo(int, int);$/;"	p	signature:(int, int)
+Write	include/unp.h	/^void	 Write(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+Write	src/util/wrapunix.c	/^Write(int fd, void *ptr, size_t nbytes)$/;"	f	signature:(int fd, void *ptr, size_t nbytes)
+Write_fd	include/unp.h	/^ssize_t	 Write_fd(int, void *, size_t, int);$/;"	p	signature:(int, void *, size_t, int)
+Writen	include/unp.h	/^void	 Writen(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+__SS_ALIGNSIZE	include/unp.h	219;"	d
+__SS_MAXSIZE	include/unp.h	218;"	d
+__SS_PAD1SIZE	include/unp.h	221;"	d
+__SS_PAD1SIZE	include/unp.h	223;"	d
+__SS_PAD2SIZE	include/unp.h	225;"	d
+__anon10::index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon10	access:public
+__anon10::load	include/server.h	/^    int load;$/;"	m	struct:__anon10	access:public
+__anon10::passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon10	access:public
+__anon10::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon10	access:public
+__anon11::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon11	access:public
+__anon12::addr	include/server.h	/^    uint32_t   addr;$/;"	m	struct:__anon12	access:public
+__anon12::domain	include/server.h	/^    const char *domain;$/;"	m	struct:__anon12	access:public
+__anon12::id	include/server.h	/^    const char *id;$/;"	m	struct:__anon12	access:public
+__anon12::port	include/server.h	/^    uint16_t   port;$/;"	m	struct:__anon12	access:public
+__anon13::addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon13	access:public
+__anon13::load	include/server.h	/^    int load;$/;"	m	struct:__anon13	access:public
+__anon13::passwd	include/server.h	/^    int passwd;$/;"	m	struct:__anon13	access:public
+__anon13::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon13	access:public
+__anon13::status	include/server.h	/^    int status;$/;"	m	struct:__anon13	access:public
+__anon2::data	include/server.h	/^    char data[16];$/;"	m	struct:__anon2	access:public
+__anon2::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon2	access:public
+__anon3::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon3	access:public
+__anon3::data	include/server.h	/^    char data[16];$/;"	m	struct:__anon3	access:public
+__anon4::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon4	access:public
+__anon5::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon5	access:public
+__anon5::addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon5	access:public
+__anon5::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon5	access:public
+__anon6::addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon6	access:public
+__anon6::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon6	access:public
+__anon6::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon6	access:public
+__anon7::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon7	access:public
+__anon7::addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon7	access:public
+__anon7::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon7	access:public
+__anon8::addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon8	access:public
+__anon8::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon8	access:public
+__anon8::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon8	access:public
+__anon9::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon9	access:public
+__anon9::index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon9	access:public
+__anon9::passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon9	access:public
+__ss_align	include/unp.h	/^	int64_t		__ss_align;$/;"	m	struct:sockaddr_storage	access:public
+__ss_pad1	include/unp.h	/^	char		__ss_pad1[__SS_PAD1SIZE];$/;"	m	struct:sockaddr_storage	access:public
+__ss_pad2	include/unp.h	/^	char		__ss_pad2[__SS_PAD2SIZE];$/;"	m	struct:sockaddr_storage	access:public
+__unp_h	include/unp.h	5;"	d
+__unp_rtt_h	include/rtt.h	2;"	d
+ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon11	access:public
+ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon3	access:public
+ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon5	access:public
+ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon7	access:public
+ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon9	access:public
+addr	include/server.h	/^    uint32_t   addr;$/;"	m	struct:__anon12	access:public
+addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon13	access:public
+addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon5	access:public
+addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon6	access:public
+addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon7	access:public
+addr	include/server.h	/^    uint32_t addr;$/;"	m	struct:__anon8	access:public
+bzero	include/unp.h	130;"	d
+connect_nonb	include/unp.h	/^int		 connect_nonb(int, const SA *, socklen_t, int);$/;"	p	signature:(int, const SA *, socklen_t, int)
+connect_timeo	include/unp.h	/^int		 connect_timeo(int, const SA *, socklen_t, int);$/;"	p	signature:(int, const SA *, socklen_t, int)
+count_mutex	src/worker.c	/^pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+daemon_inetd	include/unp.h	/^void	 daemon_inetd(const char *, int);$/;"	p	signature:(const char *, int)
+daemon_init	include/unp.h	/^int	 daemon_init(const char *, int);$/;"	p	signature:(const char *, int)
+daemon_proc	src/util/error.c	/^int		daemon_proc;		\/* set nonzero by daemon_init() *\/$/;"	v
+data	include/server.h	/^    char data[16];$/;"	m	struct:__anon2	access:public
+data	include/server.h	/^    char data[16];$/;"	m	struct:__anon3	access:public
+dg_cli	include/unp.h	/^void	 dg_cli(FILE *, int, const SA *, socklen_t);$/;"	p	signature:(FILE *, int, const SA *, socklen_t)
+dg_echo	include/unp.h	/^void	 dg_echo(int, SA *, socklen_t);$/;"	p	signature:(int, SA *, socklen_t)
+dg_send_recv	src/util/send_recv.c	/^dg_send_recv(int fd, const void *outbuff, size_t outbytes,$/;"	f	signature:(int fd, const void *outbuff, size_t outbytes, void *inbuff, size_t inbytes, const SA *destaddr, socklen_t destlen)
+domain	include/server.h	/^    const char *domain;$/;"	m	struct:__anon12	access:public
+err_doit	src/util/error.c	/^err_doit(int errnoflag, int level, const char *fmt, va_list ap)$/;"	f	file:	signature:(int errnoflag, int level, const char *fmt, va_list ap)
+err_doit	src/util/error.c	/^static void	err_doit(int, int, const char *, va_list);$/;"	p	file:	signature:(int, int, const char *, va_list)
+err_dump	include/unp.h	/^void	 err_dump(const char *, ...);$/;"	p	signature:(const char *, ...)
+err_dump	src/util/error.c	/^err_dump(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+err_msg	include/unp.h	/^void	 err_msg(const char *, ...);$/;"	p	signature:(const char *, ...)
+err_msg	src/util/error.c	/^err_msg(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+err_quit	include/unp.h	/^void	 err_quit(const char *, ...);$/;"	p	signature:(const char *, ...)
+err_quit	src/util/error.c	/^err_quit(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+err_ret	include/unp.h	/^void	 err_ret(const char *, ...);$/;"	p	signature:(const char *, ...)
+err_ret	src/util/error.c	/^err_ret(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+err_sys	include/unp.h	/^void	 err_sys(const char *, ...);$/;"	p	signature:(const char *, ...)
+err_sys	src/util/error.c	/^err_sys(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+family_to_level	include/unp.h	/^int		 family_to_level(int);$/;"	p	signature:(int)
+freeaddrinfo	include/unp.h	/^void	 freeaddrinfo(struct addrinfo *);$/;"	p	signature:(struct addrinfo *)
+gai_strerror	include/unp.h	/^char	*gai_strerror(int);$/;"	p	signature:(int)
+get	include/server.h	/^} get;$/;"	t	typeref:struct:__anon4
+get_ack	include/server.h	/^} get_ack;$/;"	t	typeref:struct:__anon5
+getaddrinfo	include/unp.h	/^int		 getaddrinfo(const char *, const char *, const struct addrinfo *,$/;"	p	signature:(const char *, const char *, const struct addrinfo *, struct addrinfo **)
+gethostbyname2	include/unp.h	137;"	d
+gethostname	include/unp.h	/^int		 gethostname(char *, int);$/;"	p	signature:(char *, int)
+getnameinfo	include/unp.h	/^int		 getnameinfo(const SA *, socklen_t, char *, size_t, char *, size_t, int);$/;"	p	signature:(const SA *, socklen_t, char *, size_t, char *, size_t, int)
+gf_time	include/unp.h	/^char	*gf_time(void);$/;"	p	signature:(void)
+hdr	src/util/send_recv.c	/^static struct hdr {$/;"	s	file:
+hdr::seq	src/util/send_recv.c	/^  uint32_t	seq;	\/* sequence # *\/$/;"	m	struct:hdr	file:	access:public
+hdr::ts	src/util/send_recv.c	/^  uint32_t	ts;		\/* timestamp when sent *\/$/;"	m	struct:hdr	file:	access:public
+heartbeat_cli	include/unp.h	/^void	 heartbeat_cli(int, int, int);$/;"	p	signature:(int, int, int)
+heartbeat_serv	include/unp.h	/^void	 heartbeat_serv(int, int, int);$/;"	p	signature:(int, int, int)
+host_serv	include/unp.h	/^struct addrinfo *host_serv(const char *, const char *, int, int);$/;"	p	signature:(const char *, const char *, int, int)
+hstrerror	include/unp.h	/^const char	*hstrerror(int);$/;"	p	signature:(int)
+id	include/server.h	/^    const char *id;$/;"	m	struct:__anon12	access:public
+if_freenameindex	include/unp.h	/^void			 if_freenameindex(struct if_nameindex *);$/;"	p	signature:(struct if_nameindex *)
+if_index	include/unp.h	/^  unsigned int   if_index;  \/* 1, 2, ... *\/$/;"	m	struct:if_nameindex	access:public
+if_indextoname	include/unp.h	/^char			*if_indextoname(unsigned int, char *);$/;"	p	signature:(unsigned int, char *)
+if_name	include/unp.h	/^  char          *if_name;   \/* null-terminated name: "le0", ... *\/$/;"	m	struct:if_nameindex	access:public
+if_nameindex	include/unp.h	/^struct if_nameindex *if_nameindex(void);$/;"	p	signature:(void)
+if_nameindex	include/unp.h	/^struct if_nameindex {$/;"	s
+if_nameindex::if_index	include/unp.h	/^  unsigned int   if_index;  \/* 1, 2, ... *\/$/;"	m	struct:if_nameindex	access:public
+if_nameindex::if_name	include/unp.h	/^  char          *if_name;   \/* null-terminated name: "le0", ... *\/$/;"	m	struct:if_nameindex	access:public
+if_nametoindex	include/unp.h	/^unsigned int	 if_nametoindex(const char *);$/;"	p	signature:(const char *)
+in_cksum	include/unp.h	/^uint16_t	in_cksum(uint16_t *, int);$/;"	p	signature:(uint16_t *, int)
+index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon10	access:public
+index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon9	access:public
+inet6_srcrt_print	include/unp.h	/^void	 inet6_srcrt_print(void *);$/;"	p	signature:(void *)
+inet_aton	include/unp.h	/^int		 inet_aton(const char *, struct in_addr *);$/;"	p	signature:(const char *, struct in_addr *)
+inet_ntop	include/unp.h	/^const char	*inet_ntop(int, const void *, char *, size_t);$/;"	p	signature:(int, const void *, char *, size_t)
+inet_pton	include/unp.h	/^int			 inet_pton(int, const char *, void *);$/;"	p	signature:(int, const char *, void *)
+inet_srcrt_add	include/unp.h	/^int		 inet_srcrt_add(char *);$/;"	p	signature:(char *)
+inet_srcrt_init	include/unp.h	/^u_char  *inet_srcrt_init(int);$/;"	p	signature:(int)
+inet_srcrt_print	include/unp.h	/^void	 inet_srcrt_print(u_char *, int);$/;"	p	signature:(u_char *, int)
+ipi_addr	include/unp.h	/^  struct in_addr	ipi_addr;	\/* dst IPv4 address *\/$/;"	m	struct:unp_in_pktinfo	typeref:struct:unp_in_pktinfo::in_addr	access:public
+ipi_ifindex	include/unp.h	/^  int				ipi_ifindex;\/* received interface index *\/$/;"	m	struct:unp_in_pktinfo	access:public
+jmpbuf	src/util/send_recv.c	/^static sigjmp_buf	jmpbuf;$/;"	v	file:
+load	include/server.h	/^    int load;$/;"	m	struct:__anon10	access:public
+load	include/server.h	/^    int load;$/;"	m	struct:__anon13	access:public
+main	src/proxy.c	/^int main()$/;"	f
+main	src/worker.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+max	include/unp.h	246;"	d
+mcast_block_source	include/unp.h	/^int		 mcast_block_source(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+mcast_get_if	include/unp.h	/^int		 mcast_get_if(int);$/;"	p	signature:(int)
+mcast_get_loop	include/unp.h	/^int		 mcast_get_loop(int);$/;"	p	signature:(int)
+mcast_get_ttl	include/unp.h	/^int		 mcast_get_ttl(int);$/;"	p	signature:(int)
+mcast_join	include/unp.h	/^int		 mcast_join(int, const SA *, socklen_t, const char *, u_int);$/;"	p	signature:(int, const SA *, socklen_t, const char *, u_int)
+mcast_join_source_group	include/unp.h	/^int		 mcast_join_source_group(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen, const char *ifname, u_int ifindex)
+mcast_leave	include/unp.h	/^int		 mcast_leave(int, const SA *, socklen_t);$/;"	p	signature:(int, const SA *, socklen_t)
+mcast_leave_source_group	include/unp.h	/^int		 mcast_leave_source_group(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+mcast_set_if	include/unp.h	/^int		 mcast_set_if(int, const char *, u_int);$/;"	p	signature:(int, const char *, u_int)
+mcast_set_loop	include/unp.h	/^int		 mcast_set_loop(int, int);$/;"	p	signature:(int, int)
+mcast_set_ttl	include/unp.h	/^int		 mcast_set_ttl(int, int);$/;"	p	signature:(int, int)
+mcast_unblock_source	include/unp.h	/^int		 mcast_unblock_source(int sockfd, const SA *src, socklen_t srclen,$/;"	p	signature:(int sockfd, const SA *src, socklen_t srclen, const SA *grp, socklen_t grplen)
+mesg_mutex	src/worker.c	/^pthread_mutex_t mesg_mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+mesg_type	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	t	typeref:enum:__anon1
+min	include/unp.h	245;"	d
+msgrecv	src/util/send_recv.c	/^static struct msghdr	msgsend, msgrecv;	\/* assumed init to 0 *\/$/;"	v	typeref:struct:	file:
+msgsend	src/util/send_recv.c	/^static struct msghdr	msgsend, msgrecv;	\/* assumed init to 0 *\/$/;"	v	typeref:struct:msghdr	file:
+my_addrs	include/unp.h	/^char   **my_addrs(int *);$/;"	p	signature:(int *)
+ntid	src/worker.c	/^pthread_t ntid;$/;"	v
+passwd	include/server.h	/^    int passwd;$/;"	m	struct:__anon13	access:public
+passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon10	access:public
+passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon9	access:public
+port	include/server.h	/^    uint16_t   port;$/;"	m	struct:__anon12	access:public
+port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon13	access:public
+port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon5	access:public
+port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon6	access:public
+port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon7	access:public
+port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon8	access:public
+pre_load	src/worker.c	/^int pre_load, proxyfd;$/;"	v
+proxyfd	src/worker.c	/^int pre_load, proxyfd;$/;"	v
+pselect	include/unp.h	/^int		 pselect(int, fd_set *, fd_set *, fd_set *,$/;"	p	signature:(int, fd_set *, fd_set *, fd_set *, const struct timespec *, const sigset_t *)
+read_fd	include/unp.h	/^ssize_t	 read_fd(int, void *, size_t, int *);$/;"	p	signature:(int, void *, size_t, int *)
+readable_timeo	include/unp.h	/^int		 readable_timeo(int, int);$/;"	p	signature:(int, int)
+readline	include/unp.h	/^ssize_t	 readline(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+readn	include/unp.h	/^ssize_t	 readn(int, void *, size_t);$/;"	p	signature:(int, void *, size_t)
+recv	include/unp.h	90;"	d
+recv	include/unp.h	92;"	d
+recvfrom_flags	include/unp.h	/^ssize_t	 recvfrom_flags(int, void *, size_t, int *, SA *, socklen_t *,$/;"	p	signature:(int, void *, size_t, int *, SA *, socklen_t *, struct unp_in_pktinfo *)
+recvhdr	src/util/send_recv.c	/^} sendhdr, recvhdr;$/;"	v	typeref:struct:hdr	file:
+reget	include/server.h	/^} reget;$/;"	t	typeref:struct:__anon6
+reget_ack	include/server.h	/^} reget_ack;$/;"	t	typeref:struct:__anon7
+regist	include/server.h	/^} regist; $/;"	t	typeref:struct:__anon8
+regist_ack	include/server.h	/^} regist_ack; $/;"	t	typeref:struct:__anon9
+request	src/worker.c	/^request_t request;$/;"	v
+request_counter	src/worker.c	/^void *request_counter(void *arg)$/;"	f	signature:(void *arg)
+request_t	include/server.h	/^} request_t;$/;"	t	typeref:struct:__anon2
+response	src/worker.c	/^response_t response;$/;"	v
+response_t	include/server.h	/^} response_t;$/;"	t	typeref:struct:__anon3
+rtt_base	include/rtt.h	/^  uint32_t	rtt_base;	\/* #sec since 1\/1\/1970 at start *\/$/;"	m	struct:rtt_info	access:public
+rtt_d_flag	src/util/rtt.c	/^int		rtt_d_flag = 0;		\/* debug flag; can be set by caller *\/$/;"	v
+rtt_debug	include/rtt.h	/^void	 rtt_debug(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_debug	src/util/rtt.c	/^rtt_debug(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rtt_info	include/rtt.h	/^struct rtt_info {$/;"	s
+rtt_info::rtt_base	include/rtt.h	/^  uint32_t	rtt_base;	\/* #sec since 1\/1\/1970 at start *\/$/;"	m	struct:rtt_info	access:public
+rtt_info::rtt_nrexmt	include/rtt.h	/^  int		rtt_nrexmt;	\/* #times retransmitted: 0, 1, 2, ... *\/$/;"	m	struct:rtt_info	access:public
+rtt_info::rtt_rto	include/rtt.h	/^  float		rtt_rto;	\/* current RTO to use, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_info::rtt_rtt	include/rtt.h	/^  float		rtt_rtt;	\/* most recent measured RTT, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_info::rtt_rttvar	include/rtt.h	/^  float		rtt_rttvar;	\/* smoothed mean deviation, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_info::rtt_srtt	include/rtt.h	/^  float		rtt_srtt;	\/* smoothed RTT estimator, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_init	include/rtt.h	/^void	 rtt_init(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_init	src/util/rtt.c	/^rtt_init(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rtt_minmax	src/util/rtt.c	/^rtt_minmax(float rto)$/;"	f	file:	signature:(float rto)
+rtt_newpack	include/rtt.h	/^void	 rtt_newpack(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_newpack	src/util/rtt.c	/^rtt_newpack(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rtt_nrexmt	include/rtt.h	/^  int		rtt_nrexmt;	\/* #times retransmitted: 0, 1, 2, ... *\/$/;"	m	struct:rtt_info	access:public
+rtt_rto	include/rtt.h	/^  float		rtt_rto;	\/* current RTO to use, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_rtt	include/rtt.h	/^  float		rtt_rtt;	\/* most recent measured RTT, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_rttvar	include/rtt.h	/^  float		rtt_rttvar;	\/* smoothed mean deviation, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_srtt	include/rtt.h	/^  float		rtt_srtt;	\/* smoothed RTT estimator, seconds *\/$/;"	m	struct:rtt_info	access:public
+rtt_start	include/rtt.h	/^int		 rtt_start(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_start	src/util/rtt.c	/^rtt_start(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rtt_stop	include/rtt.h	/^void	 rtt_stop(struct rtt_info *, uint32_t);$/;"	p	signature:(struct rtt_info *, uint32_t)
+rtt_stop	src/util/rtt.c	/^rtt_stop(struct rtt_info *ptr, uint32_t ms)$/;"	f	signature:(struct rtt_info *ptr, uint32_t ms)
+rtt_timeout	include/rtt.h	/^int		 rtt_timeout(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_timeout	src/util/rtt.c	/^rtt_timeout(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rtt_ts	include/rtt.h	/^uint32_t rtt_ts(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
+rtt_ts	src/util/rtt.c	/^rtt_ts(struct rtt_info *ptr)$/;"	f	signature:(struct rtt_info *ptr)
+rttinfo	src/util/send_recv.c	/^static struct rtt_info   rttinfo;$/;"	v	typeref:struct:rtt_info	file:
+rttinit	src/util/send_recv.c	/^static int	rttinit = 0;$/;"	v	file:
+send	include/unp.h	91;"	d
+send	include/unp.h	93;"	d
+send_and_get	src/client_linux.c	/^int send_and_get (const char *data, const char *result)$/;"	f	signature:(const char *data, const char *result)
+senddata	src/client.c	/^int __cdecl senddata(char *dataDath, char *resultPath) $/;"	f	signature:(char *dataDath, char *resultPath)
+sendhdr	src/util/send_recv.c	/^} sendhdr, recvhdr;$/;"	v	typeref:struct:hdr	file:
+seq	src/util/send_recv.c	/^  uint32_t	seq;	\/* sequence # *\/$/;"	m	struct:hdr	file:	access:public
+server_conf	include/server.h	/^} server_conf;$/;"	v	typeref:struct:__anon12
+sig_alrm	src/util/send_recv.c	/^sig_alrm(int signo)$/;"	f	file:	signature:(int signo)
+sig_alrm	src/util/send_recv.c	/^static void	sig_alrm(int signo);$/;"	p	file:	signature:(int signo)
+signal_intr	include/unp.h	/^Sigfunc *signal_intr(int, Sigfunc *);$/;"	p	signature:(int, Sigfunc *)
+snprintf	include/unp.h	/^int		 snprintf(char *, size_t, const char *, ...);$/;"	p	signature:(char *, size_t, const char *, ...)
+sock_bind_wild	include/unp.h	/^int		 sock_bind_wild(int, int);$/;"	p	signature:(int, int)
+sock_cmp_addr	include/unp.h	/^int		 sock_cmp_addr(const SA *, const SA *, socklen_t);$/;"	p	signature:(const SA *, const SA *, socklen_t)
+sock_cmp_port	include/unp.h	/^int		 sock_cmp_port(const SA *, const SA *, socklen_t);$/;"	p	signature:(const SA *, const SA *, socklen_t)
+sock_get_port	include/unp.h	/^int		 sock_get_port(const SA *, socklen_t);$/;"	p	signature:(const SA *, socklen_t)
+sock_ntop	include/unp.h	/^char	*sock_ntop(const SA *, socklen_t);$/;"	p	signature:(const SA *, socklen_t)
+sock_ntop_host	include/unp.h	/^char	*sock_ntop_host(const SA *, socklen_t);$/;"	p	signature:(const SA *, socklen_t)
+sock_set_addr	include/unp.h	/^void	 sock_set_addr(SA *, socklen_t, const void *);$/;"	p	signature:(SA *, socklen_t, const void *)
+sock_set_port	include/unp.h	/^void	 sock_set_port(SA *, socklen_t, int);$/;"	p	signature:(SA *, socklen_t, int)
+sock_set_wild	include/unp.h	/^void	 sock_set_wild(SA *, socklen_t);$/;"	p	signature:(SA *, socklen_t)
+sockaddr_storage	include/unp.h	/^struct sockaddr_storage {$/;"	s
+sockaddr_storage::__ss_align	include/unp.h	/^	int64_t		__ss_align;$/;"	m	struct:sockaddr_storage	access:public
+sockaddr_storage::__ss_pad1	include/unp.h	/^	char		__ss_pad1[__SS_PAD1SIZE];$/;"	m	struct:sockaddr_storage	access:public
+sockaddr_storage::__ss_pad2	include/unp.h	/^	char		__ss_pad2[__SS_PAD2SIZE];$/;"	m	struct:sockaddr_storage	access:public
+sockaddr_storage::ss_family	include/unp.h	/^	sa_family_t	ss_family;$/;"	m	struct:sockaddr_storage	access:public
+sockaddr_storage::ss_len	include/unp.h	/^	u_char		ss_len;$/;"	m	struct:sockaddr_storage	access:public
+sockatmark	include/unp.h	/^int		 sockatmark(int);$/;"	p	signature:(int)
+sockfd_to_family	include/unp.h	/^int		 sockfd_to_family(int);$/;"	p	signature:(int)
+ss_family	include/unp.h	/^	sa_family_t	ss_family;$/;"	m	struct:sockaddr_storage	access:public
+ss_len	include/unp.h	/^	u_char		ss_len;$/;"	m	struct:sockaddr_storage	access:public
+status	include/server.h	/^    int status;$/;"	m	struct:__anon13	access:public
+str_cli	include/unp.h	/^void	 str_cli(FILE *, int);$/;"	p	signature:(FILE *, int)
+str_echo	include/unp.h	/^void	 str_echo(int);$/;"	p	signature:(int)
+tcp_connect	include/unp.h	/^int		 tcp_connect(const char *, const char *);$/;"	p	signature:(const char *, const char *)
+tcp_listen	include/unp.h	/^int		 tcp_listen(const char *, const char *, socklen_t *);$/;"	p	signature:(const char *, const char *, socklen_t *)
+this	src/worker.c	/^worker this;$/;"	v
+timespec	include/unp.h	/^struct timespec {$/;"	s
+timespec::tv_nsec	include/unp.h	/^  long		tv_nsec;	\/* and nanoseconds *\/$/;"	m	struct:timespec	access:public
+timespec::tv_sec	include/unp.h	/^  time_t	tv_sec;		\/* seconds *\/$/;"	m	struct:timespec	access:public
+ts	src/util/send_recv.c	/^  uint32_t	ts;		\/* timestamp when sent *\/$/;"	m	struct:hdr	file:	access:public
+tv_nsec	include/unp.h	/^  long		tv_nsec;	\/* and nanoseconds *\/$/;"	m	struct:timespec	access:public
+tv_sec	include/unp.h	/^  time_t	tv_sec;		\/* seconds *\/$/;"	m	struct:timespec	access:public
+tv_sub	include/unp.h	/^void	 tv_sub(struct timeval *, struct timeval *);$/;"	p	signature:(struct timeval *, struct timeval *)
+type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon10	access:public
+type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon2	access:public
+type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon4	access:public
+type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon6	access:public
+type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon8	access:public
+udp_client	include/unp.h	/^int		 udp_client(const char *, const char *, SA **, socklen_t *);$/;"	p	signature:(const char *, const char *, SA **, socklen_t *)
+udp_connect	include/unp.h	/^int		 udp_connect(const char *, const char *);$/;"	p	signature:(const char *, const char *)
+udp_server	include/unp.h	/^int		 udp_server(const char *, const char *, socklen_t *);$/;"	p	signature:(const char *, const char *, socklen_t *)
+unp_in_pktinfo	include/unp.h	/^struct unp_in_pktinfo {$/;"	s
+unp_in_pktinfo::ipi_addr	include/unp.h	/^  struct in_addr	ipi_addr;	\/* dst IPv4 address *\/$/;"	m	struct:unp_in_pktinfo	typeref:struct:unp_in_pktinfo::in_addr	access:public
+unp_in_pktinfo::ipi_ifindex	include/unp.h	/^  int				ipi_ifindex;\/* received interface index *\/$/;"	m	struct:unp_in_pktinfo	access:public
+update	include/server.h	/^} update;$/;"	t	typeref:struct:__anon10
+update_ack	include/server.h	/^} update_ack; $/;"	v	typeref:struct:__anon11
+worker	include/server.h	/^} worker; $/;"	t	typeref:struct:__anon13
+writable_timeo	include/unp.h	/^int		 writable_timeo(int, int);$/;"	p	signature:(int, int)
+write_fd	include/unp.h	/^ssize_t	 write_fd(int, void *, size_t, int);$/;"	p	signature:(int, void *, size_t, int)
+writen	include/unp.h	/^ssize_t	 writen(int, const void *, size_t);$/;"	p	signature:(int, const void *, size_t)

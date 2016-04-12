@@ -16,7 +16,7 @@
  *warning: passing arg 2 of `connect' discards `const' from pointer target type
  */
 
-#include	"unp.h"
+#include	"server.h"
 
 int
 Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)
@@ -25,11 +25,7 @@ Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)
 
 again:
 	if ( (n = accept(fd, sa, salenptr)) < 0) {
-#ifdef	EPROTO
-		if (errno == EPROTO || errno == ECONNABORTED)
-#else
-		if (errno == ECONNABORTED)
-#endif
+		if (errno == EINTR || errno == ECONNABORTED)
 			goto again;
 		else
 			err_sys("accept error");

@@ -2,8 +2,7 @@
  * pthreads wrapper functions.
  */
 
-#include	"unp.h"
-#include	"unpthread.h"
+#include	"server.h"
 
 void
 Pthread_create(pthread_t *tid, const pthread_attr_t *attr,
