@@ -101,6 +101,7 @@ typedef struct {
     uint32_t   addr;
 } server_conf;
 
+#define DEFAULT_NWORKER 20
 typedef struct {
     int passwd;
     int index;
