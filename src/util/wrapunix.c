@@ -28,6 +28,16 @@ Calloc(size_t n, size_t size)
 	return(ptr);
 }
 
+void *
+Realloc(void *nptr, size_t size)
+{
+	void	*ptr;
+
+	if ( (ptr = realloc(nptr, size)) == NULL)
+		err_sys("malloc error");
+	return(ptr);
+}
+
 void
 Close(int fd)
 {

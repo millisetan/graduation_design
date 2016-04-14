@@ -17,6 +17,7 @@
 #include   <sys/wait.h>
 #include   <syslog.h>
 #include   <sys/ioctl.h>
+#include <openssl/md5.h>
 
 
 
@@ -24,12 +25,12 @@
 #define MAX_REQUESTS 10000
 #define MAX_WORKER   100
 #define SERV_PORT    5678
-#define SERV_IP      "45.63.113.14"
-#define PROXY_PORT    6789
-#define PROXY_IP      "45.63.113.14"
+#define SERV_IP      "45.62.113.14"
+#define PROXY_PORT   6789
+#define PROXY_IP     "45.62.113.14"
 #define MESG_LEN     100
-#define	MAXLINE		4096	/* max text line length */
-#define	BUFSIZE	8192	/* buffer size for reads and writes */
+#define	MAXLINE	     4096	/* max text line length */
+#define	BUFSIZE	     1024	/* buffer size for reads and writes */
 
 #define	min(a,b)	((a) < (b) ? (a) : (b))
 #define	max(a,b)	((a) > (b) ? (a) : (b))
@@ -101,6 +102,7 @@ typedef struct {
     uint32_t   addr;
 } server_conf;
 
+#define DEFAULT_NWORKER 20
 typedef struct {
     int passwd;
     int index;
@@ -114,7 +116,10 @@ typedef struct {
 #define WKR_RDY 1
 #define WKR_OVL 2
 
-
+int Close(int );
+void* Calloc(size_t, size_t);
+void* Realloc(void *, size_t);
+pid_t Fork(void);   
 
 
 			/* prototypes for our stdio wrapper functions: see {Sec errors} */

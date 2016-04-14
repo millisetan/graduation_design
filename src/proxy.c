@@ -1,24 +1,28 @@
 #include "server.h"
 #include "rtt.h"
 
+#define PROXY_DEBUG
+#ifdef  PROXY_DEBUG
+#include <inttypes.h>
+#endif
+worker *workers;
+int nworker, wkrcur =-1, least_loaded;
+struct hdr {
+    uint32_t seq;
+    uint32_t ts;
+} send_recv_hdr;
+request_t request;
+response_t response;
+struct msghdr msgsend, msgrecv;
+struct iovec iovsend[2], iovrecv[2];
+struct sockaddr_in rqstaddr;
 
 int main()
 {
-    int clifd, wkrfd, testfd, option =1, maxfdp, activity, wkrcur;
-    int nworker;
-    int least_loaded;
+    int clifd, wkrfd, testfd, option =1, maxfdp, activity;
     int mesg_len;
-    request_t request;
-    response_t response;
-    worker *workers;
     fd_set rset;
-    struct hdr {
-        uint32_t seq;
-        uint32_t ts;
-    } send_recv_hdr;
-    struct msghdr msgsend, msgrecv;
-    struct iovec iovsend[2], iovrecv[2];
-    struct sockaddr_in clilstnaddr, wkrlstnaddr, rqstaddr, testaddr;
+    struct sockaddr_in clilstnaddr, wkrlstnaddr, testaddr;
 
     /* Listenning for client */
     clifd = Socket(AF_INET, SOCK_DGRAM, 0);
@@ -38,6 +42,8 @@ int main()
     wkrlstnaddr.sin_port = htons(PROXY_PORT);
     inet_pton(AF_INET, PROXY_IP, &wkrlstnaddr.sin_addr);
     Bind(wkrfd, (struct sockaddr *)&wkrlstnaddr, sizeof(wkrlstnaddr));
+
+    workers = Calloc(DEFAULT_NWORKER, sizeof(worker));
 
     FD_ZERO(&rset);
     for ( ; ; ) {
@@ -71,9 +77,8 @@ int main()
                         testaddr.sin_family = AF_INET;
                         testaddr.sin_port = tmp->port;
                         testaddr.sin_addr.s_addr = tmp->addr;
-                        if ((connect(testfd, (struct sockaddr *)&testaddr,
-                                     sizeof(testaddr)) < 0) &&
-                            (errno == ECONNREFUSED)) {
+                        if (connect(testfd, (struct sockaddr *)&testaddr,
+                                     sizeof(testaddr)) < 0) {
                                 workers[i].status = WKR_FLD;
                         }
                         close(testfd);
@@ -83,13 +88,31 @@ int main()
             }
             /* Send response back */
             if ((request.type == GET) || (request.type == REGET)) {
+#ifdef PROXY_DEBUG
+            if (request.type == GET) {
+                printf("GETTING new worker.\n");
+            }
+            else if (request.type == REGET) {
+                printf("REGETTING new worker.\n");
+            }
+#endif
+                int loop = nworker;
                 do {
                     wkrcur = (wkrcur +1)%nworker;
-                } while(workers[wkrcur].status != WKR_RDY);
+                } while((workers[wkrcur].status != WKR_RDY) && --loop);
                 get_ack *result = (get_ack *)&response;
-                result->ack = 1;
-                result->port = workers[wkrcur].port;
-                result->addr = workers[wkrcur].addr;
+                if(workers[wkrcur].status == WKR_RDY) {
+#ifdef PROXY_DEBUG
+                    printf("select worker id: %u\n", wkrcur);
+#endif
+                    result->ack = 1;
+                    result->port = workers[wkrcur].port;
+                    result->addr = workers[wkrcur].addr;
+                } else {
+                    result->ack = 0;
+                    result->port = 0;
+                    result->addr = 0;
+                }
                 msgsend.msg_name = &rqstaddr;
                 msgsend.msg_namelen = sizeof(rqstaddr);
                 msgsend.msg_iov = iovsend;
@@ -117,10 +140,17 @@ int main()
             /* Handle worker register */
             if (request.type == RGST) {
                 regist *tmp = (regist *)&request;
+#ifdef PROXY_DEBUG
+                printf("REGISTERING.\n");
+#endif
                 int i;
                 for (i=0; i<nworker; i++) {
                     if ((tmp->port == workers[i].port) &&
                         (tmp->addr == workers[i].addr)) {
+#ifdef PROXY_DEBUG
+                        /* happenned when regist_ack lost on the way */
+                        printf("worker recovery.\n");
+#endif
                         worker *wkr_tmp = &workers[i];
                         wkr_tmp->status = WKR_RDY;
                         wkr_tmp->load = 0;
@@ -128,9 +158,12 @@ int main()
                     }
                 }
                 if (i == nworker) {
-                    workers = realloc(workers, sizeof(worker)*(++nworker));
-                    if (!workers) {
-                        /* fatal error */
+                    nworker++;
+#ifdef PROXY_PORT
+                    printf("Now %d workers.\n", nworker);
+#endif
+                    if (nworker > DEFAULT_NWORKER) {
+                        workers = Realloc(workers, sizeof(worker)*(++nworker));
                     }
                     worker *wkr_tmp = &workers[nworker-1];
                     wkr_tmp->status = WKR_RDY;
@@ -138,11 +171,18 @@ int main()
                     wkr_tmp->load = 0;
                     wkr_tmp->port = tmp->port;
                     wkr_tmp->addr = tmp->addr;
+#ifdef PROXY_PORT
+                        printf("New worker listenning addr : %s, port : %d\n", inet_ntoa(*(struct in_addr *)&tmp->addr), ntohs(tmp->port));
+#endif
                 }
                 regist_ack *result = (regist_ack *)&response;
                 result->ack = 1;
                 result->index = i;
                 result->passwd = workers[i].passwd;
+#ifdef PROXY_PORT
+                printf("ack : %"PRIu16", index : %"PRIu32", passwd : %"PRIu32"\n", result->ack, result->index, result->passwd);
+#endif
+
                 msgsend.msg_name = &rqstaddr;
                 msgsend.msg_namelen = sizeof(rqstaddr);
                 msgsend.msg_iov = iovsend;
@@ -156,6 +196,9 @@ int main()
             }
             /* Handle worker information update */
             else if(request.type == UPDT) {
+#ifdef PROXY_DEBUG
+            printf("UPDATE\n");
+#endif
                 update *update_tmp = (update *)&request;
                 int valid =0;
                 if (workers[update_tmp->index].passwd == update_tmp->passwd) {
@@ -164,16 +207,19 @@ int main()
                         workers[update_tmp->index].status == WKR_RDY;
                     }
                     valid = 1;
+#ifdef PROXY_DEBUG
+                    printf("Worker ID: %u, update value: %u\n", update_tmp->index, update_tmp->load);
+#endif
                     if (update_tmp->index == least_loaded) {
                         if (workers[least_loaded].load < update_tmp->load) {
                             workers[least_loaded].load = update_tmp->load;
                             int i;
                             for (i =0; i < nworker; i++) {
-                                if ((workers[i].status == WKR_RDY) &&
-                                    (workers[i].load < update_tmp->load)) {
+                                if (workers[i].load < workers[least_loaded].load) {
                                     least_loaded = i;
                                 }
                             }
+                            workers[least_loaded].status = WKR_RDY;
                         } else {
                             workers[least_loaded].load = update_tmp->load;
                         }
@@ -190,6 +236,14 @@ int main()
                 }
                 update_ack *result = (update_ack *)&response;
                 result->ack = valid;
+
+#ifdef PROXY_DEBUG
+                if (valid == 1) {
+                    printf("update successful\n");
+                } else {
+                    printf("update failed\n");
+                }
+#endif
                 msgsend.msg_name = &rqstaddr;
                 msgsend.msg_namelen = sizeof(rqstaddr);
                 msgsend.msg_iov = iovsend;
