@@ -116,6 +116,11 @@ typedef struct {
 #define WKR_RDY 1
 #define WKR_OVL 2
 
+typedef struct {
+    unsigned long file_len;
+	unsigned char md5[MD5_DIGEST_LENGTH];
+} file_hdr;
+
 int Close(int );
 void* Calloc(size_t, size_t);
 void* Realloc(void *, size_t);

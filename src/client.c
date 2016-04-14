@@ -3,12 +3,6 @@
 
 #define CLIENT_DEBUG
 
-request_t request;
-response_t response;
-typedef struct {
-    unsigned long file_len;
-	unsigned char md5[MD5_DIGEST_LENGTH];
-} file_hdr;
 
 void Dg_send_recv(int fd, const void *outbuff, size_t outbytes,
              void *inbuff, size_t inbytes,
@@ -16,10 +10,17 @@ void Dg_send_recv(int fd, const void *outbuff, size_t outbytes,
 
 int send_and_get (const char *data_f, const char *result_f)
 {
-    int proxyfd, workerfd;
+    int proxyfd, workerfd, is_reget =0, bytes, bytes_read, bytes_writen, con_ret;
     struct sockaddr_in proxyaddr, workeraddr;
     file_hdr data_hdr, result_hdr;
     char buf[BUFSIZE];
+    MD5_CTX mdContext;
+	unsigned char tmp_md5[MD5_DIGEST_LENGTH];
+    FILE *inFile, *outFile;
+    struct timeval recv_timeout;
+    void *p;
+    request_t request;
+    response_t response;
 
     proxyfd = Socket(AF_INET, SOCK_DGRAM, 0);
     memset(&proxyaddr, 0, sizeof(proxyaddr));
@@ -27,28 +28,43 @@ int send_and_get (const char *data_f, const char *result_f)
     proxyaddr.sin_port = htons(SERV_PORT);
     inet_pton(AF_INET, SERV_IP, &proxyaddr.sin_addr);
 
-    get *get_tmp = (get *)&request;
-    get_tmp->type = GET;
+    signal(SIGPIPE, SIG_IGN);
+REGET:
+    if (is_reget) {
+        reget *reget_tmp = (reget *)&request;
+        reget_tmp->type = REGET;
+        reget_tmp->port = workeraddr.sin_port;
+        reget_tmp->addr = workeraddr.sin_addr.s_addr; 
+    } else {
+        get *get_tmp = (get *)&request;
+        get_tmp->type = GET;
+    }
+    /* connect to server, quit if failed */
     Dg_send_recv(proxyfd, (void *)&request, sizeof(request), (void *)&response, sizeof(response), (SA *)&proxyaddr, sizeof(proxyaddr));
-    get_ack *get_ack_tmp = (get_ack *)&response;
-    workerfd = Socket(AF_INET, SOCK_STREAM, 0);
-    memset(&workeraddr, 0, sizeof(workeraddr));
-    workeraddr.sin_family = AF_INET;
-    workeraddr.sin_port = get_ack_tmp->port;
-    workeraddr.sin_addr.s_addr = get_ack_tmp->addr;
+    if (is_reget) {
+        reget_ack *reget_ack_tmp = (reget_ack *)&response;
+        workerfd = Socket(AF_INET, SOCK_STREAM, 0);
+        memset(&workeraddr, 0, sizeof(workeraddr));
+        workeraddr.sin_family = AF_INET;
+        workeraddr.sin_port = reget_ack_tmp->port;
+        workeraddr.sin_addr.s_addr = reget_ack_tmp->addr;
+    } else {
+        get_ack *get_ack_tmp = (get_ack *)&response;
+        workerfd = Socket(AF_INET, SOCK_STREAM, 0);
+        memset(&workeraddr, 0, sizeof(workeraddr));
+        workeraddr.sin_family = AF_INET;
+        workeraddr.sin_port = get_ack_tmp->port;
+        workeraddr.sin_addr.s_addr = get_ack_tmp->addr;
+    }
 
-    int con_retc = connect(workerfd, (struct sockaddr *)&workeraddr, sizeof(workeraddr));
-#ifdef CLIENT_DEBUG
-    printf("Connected to worker, addr: %s, port: %d.\n", inet_ntoa((struct in_addr)workeraddr.sin_addr), ntohs(workeraddr.sin_port));
-#endif
+    con_ret = connect(workerfd, (struct sockaddr *)&workeraddr, sizeof(workeraddr));
+    if (con_ret < 0) {
+        is_reget = 1;
+        goto REGET;
+    }
 
-    FILE *inFile = Fopen (data_f, "rb");
-#ifdef CLIENT_DEBUG
-    printf("infile :%s, outfile :%s\n", data_f, result_f);
-#endif
-    MD5_CTX mdContext;
-    int bytes;
-
+    /* Get file length and md5 */
+    inFile = Fopen (data_f, "rb");
     data_hdr.file_len = 0;
     MD5_Init (&mdContext);
     while ((bytes = fread (buf, 1, BUFSIZE, inFile)) != 0) {
@@ -56,34 +72,35 @@ int send_and_get (const char *data_f, const char *result_f)
         MD5_Update (&mdContext, buf, bytes);
     }
     MD5_Final (data_hdr.md5,&mdContext);
-#ifdef CLIENT_DEBUG
-    printf("file md5: ");
-    for(int n=0; n<MD5_DIGEST_LENGTH; n++)
-        printf("%02x", data_hdr.md5[n]);
-    printf("file length: %d", data_hdr.file_len);
-    printf("\n");
-#endif
 
-    fseek(inFile, 0, SEEK_SET);
-    void *p = &data_hdr;
+    /* send file header(file length and md5) */
+    p = &data_hdr;
     bytes =sizeof(data_hdr);
-    int bytes_writen;
     while (bytes > 0) {
         bytes_writen = send(workerfd, p, bytes, 0);
         if (bytes_writen == -1) {
+            if (errno == EINTR) continue;
+            if ( (errno == ECONNRESET) || (errno == EPIPE)) {
+                is_reget;
+                Fclose(inFile);
+                close(workerfd);
+                goto REGET;
+            }
             err_sys("send error");
         }
         bytes -= bytes_writen;
         p += bytes_writen;
     }
 
-    while (1) {
+    /* Send data file */
+    fseek(inFile, 0, SEEK_SET);
+    while (!feof(inFile)) {
         bytes = fread(buf, 1, sizeof(buf), inFile);
-        if (bytes == 0) {
-            break;
-        }
-        if (bytes == -1) {
-
+        if (ferror(inFile)) {
+            is_reget = 1;
+            Fclose(inFile);
+            close(workerfd);
+            goto REGET;
         }
         p = buf;
         while (bytes > 0) {
@@ -97,41 +114,65 @@ int send_and_get (const char *data_f, const char *result_f)
     }
     Fclose(inFile);
         
+    
+    /* recieve file header(file length and md5) */
     p = &result_hdr;
     bytes =sizeof(result_hdr);
+    fd_set rset;
+    FD_ZERO(&rset);
+    FD_SET(workerfd, &rset);
+    recv_timeout.tv_sec = 900;
+    recv_timeout.tv_usec = 0;
+    if (!select(workerfd +1, &rset, NULL, NULL, &recv_timeout)) {
+#ifdef CLIENT_DEBUG
+        printf("Receiving worker result timeout\n");
+#endif
+        is_reget = 1;
+        close(workerfd);
+        goto REGET;
+    } 
     while (bytes > 0) {
         bytes_writen = recv(workerfd, p, bytes, 0);
         if (bytes_writen == -1) {
-            err_sys("send error");
+            if (errno ==EINTR) continue;
+            err_sys("recv error");
         }
         bytes -= bytes_writen;
         p += bytes_writen;
     }
-#ifdef CLIENT_DEBUG
-    printf("file md5: ");
-    for(int n=0; n<MD5_DIGEST_LENGTH; n++)
-        printf("%02x", data_hdr.md5[n]);
-    printf("file length: %d", data_hdr.file_len);
-    printf("\n");
-#endif
 
+
+    /* recieve result file */
     bytes = result_hdr.file_len;
-    int bytes_read;
-    FILE *outFile = fopen(result_f, "wb");
-	unsigned char tmp_md5[MD5_DIGEST_LENGTH];
+    outFile = fopen(result_f, "wb");
     MD5_Init (&mdContext);
     while (bytes > 0) {
         bytes_read = Recv(workerfd, buf, min(sizeof(buf),bytes), 0);
         MD5_Update (&mdContext, buf, bytes_read);
         bytes_writen = fwrite(buf, 1, bytes_read, outFile); 
+        if (ferror(outFile)) {
+            is_reget = 1;
+            Fclose(outFile);
+            remove(result_f);
+            close(workerfd);
+            goto REGET;
+        }
         bytes -= bytes_read;
     }
+    Fclose(outFile);
+
     MD5_Final (tmp_md5,&mdContext);
     if (!strncmp(tmp_md5, result_hdr.md5, MD5_DIGEST_LENGTH)) {
 #ifdef CLIENT_DEBUG
-        printf("ma5 test successful.\n");
+        printf("Recieve result file successfully.\n");
 #endif
         Close(workerfd);
+        return 0;
+    } else {
+        remove(result_f);
+        is_reget = 1;
+        close(workerfd);
+        goto REGET;
     }
 }
 

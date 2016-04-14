@@ -13,19 +13,20 @@ TARGET3 := bin/client
 SRCEXT := c
 SOURCES := $(shell find $(SRCDIR) -type f -name '*.$(SRCEXT)')
 OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
-//CFLAGS := -Wall
-LIB := -lpthread
+CFLAGS := -Wall -std=c99 
+LIB := -lpthread -lssl -lcrypto
+NOLIB :=  
 INC := -I include
+
+$(TARGET2): $(BUILDDIR)/proxy.o $(OBJECTS)
+	@echo " Linking..."
+	@echo " $(CC) $^ -o $(TARGET2) $(NOLIB)"; $(CC) $^ -o $(TARGET2) $(LIB)
 
 $(TARGET1): $(BUILDDIR)/worker.o $(OBJECTS)
 	@echo " Linking..."
 	@echo " $(CC) $^ -o $(TARGET1) $(LIB)"; $(CC) $^ -o $(TARGET1) $(LIB)
 
-$(TARGET2): $(BUILDDIR)/proxy.o $(OBJECTS)
-	@echo " Linking..."
-	@echo " $(CC) $^ -o $(TARGET2) $(LIB)"; $(CC) $^ -o $(TARGET2) $(LIB)
-
-$(TARGET3): $(BUILDDIR)/client_linux.o $(OBJECTS)
+$(TARGET3): $(BUILDDIR)/client.o $(OBJECTS)
 	@echo " Linking..."
 	@echo " $(CC) $^ -o $(TARGET3) $(LIB)"; $(CC) $^ -o $(TARGET3) $(LIB)
 

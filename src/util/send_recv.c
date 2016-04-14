@@ -67,7 +67,9 @@ sendagain:
 
 	if (sigsetjmp(jmpbuf, 1) != 0) {
 		if (rtt_timeout(&rttinfo) < 0) {
+#ifdef	RTT_DEBUG
 			err_msg("dg_send_recv: no response from server, giving up");
+#endif
 			rttinit = 0;	/* reinit in case we're called again */
 			errno = ETIMEDOUT;
 			return(-1);

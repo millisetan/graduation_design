@@ -1,6 +1,7 @@
 #include "server.h"
 #include "rtt.h"
 #define WORKER_DEBUG
+
 #ifdef  WORKER_DEBUG
 #include <inttypes.h>
 #endif
@@ -12,14 +13,6 @@ pthread_mutex_t mesg_mutex = PTHREAD_MUTEX_INITIALIZER;
 worker this;
 int load, pre_load, proxyfd;
 struct sockaddr_in proxyaddr;
-request_t request;
-response_t response;
-request_t request_cli;
-response_t response_cli;
-typedef struct {
-    unsigned long file_len;
-	unsigned char md5[MD5_DIGEST_LENGTH];
-} file_hdr;
 
 void Dg_send_recv(int fd, const void *outbuff, size_t outbytes,
              void *inbuff, size_t inbytes,
@@ -29,25 +22,31 @@ void *request_counter(void *arg)
 {
     update_ack *update_ack_tmp;
     int status, diff, tmp_load;
+    pid_t pid;
     update *update_tmp;
-#ifdef WORKER_DEBUG
-    printf("Enter request_counter.\n");
-#endif
+    char data_f[20], result_f[20];
+    request_t request;
+    response_t response;
     for ( ; ; ) {
-        if (waitpid(-1, &status, 0) == -1) {
+        if ( (pid = waitpid(-1, &status, 0)) == -1) {
             continue;
         }
-        
 #ifdef WORKER_DEBUG
-        printf("ending a request.\n");
+        printf("Request handle by pid %d, return value %d", pid, WEXITSTATUS(status));
 #endif
+        sprintf(data_f,"%u.data", pid);
+        sprintf(result_f,"%u.data", pid);
+        remove(data_f);
+        remove(result_f);
+
         Pthread_mutex_lock(&count_mutex);
         load--;
         diff = load - pre_load;
         Pthread_mutex_unlock(&count_mutex);
 
         /* foward count to proxy */
-        if ((diff > -7) && (diff < 7)) continue;
+        
+        if ( (diff > -7) && (diff < 7)) continue;
 
         update_tmp = (update *)&request;
         update_tmp->type = UPDT;
@@ -57,12 +56,18 @@ void *request_counter(void *arg)
         Pthread_mutex_lock(&mesg_mutex);
         tmp_load = load;
         diff = tmp_load - pre_load;
-        if ((diff <= -7) || (diff >= 7)) {
+        if ( (diff <= -7) || (diff >= 7)) {
+#ifdef WORKER_DEBUG
+            printf("UPDATING request count : %d\n", tmp_load);
+#endif
             update_tmp->load = tmp_load;
             Dg_send_recv(proxyfd, &request, sizeof(request), &response, 
                         sizeof(response), (SA *)&proxyaddr, sizeof(proxyaddr));
             update_ack_tmp = (update_ack *)&response;
             pre_load = tmp_load;
+#ifdef WORKER_DEBUG
+            printf("UPDATING successfuly.\n");
+#endif
         }
         Pthread_mutex_unlock(&mesg_mutex);
     }
@@ -82,6 +87,8 @@ int main(int argc, char **argv)
     socklen_t workerlen;
     update *update_tmp;
     update_ack *update_ack_tmp;
+    request_t request_cli;
+    response_t response_cli;
 
     /* Option and config file */
     openlog(NULL,LOG_CONS|LOG_PID, LOG_LOCAL1);
@@ -107,14 +114,13 @@ int main(int argc, char **argv)
     regist_tmp->port = (uint16_t)workeraddr.sin_port;
     regist_tmp->addr = (uint32_t)workeraddr.sin_addr.s_addr;
 #ifdef WORKER_DEBUG
-    printf("REGISTER\n");
-    printf("liistenning addr : %s, port : %d\n", inet_ntoa(*(struct in_addr *)&regist_tmp->addr), ntohs(regist_tmp->port));
+    printf("REGISTER ");
 #endif
-    Dg_send_recv(proxyfd, (void *)&request_cli, sizeof(request), (void *)&response_cli, sizeof(response_cli), (SA *)&proxyaddr, sizeof(proxyaddr));
+    Dg_send_recv(proxyfd, (void *)&request_cli, sizeof(request_cli), (void *)&response_cli, sizeof(response_cli), (SA *)&proxyaddr, sizeof(proxyaddr));
     regist_ack *regist_ack_tmp = (regist_ack *)&response_cli;
     
 #ifdef WORKER_DEBUG
-    printf("ack : %"PRIu16", index : %"PRIu32", passwd : %"PRIu32"\n", regist_ack_tmp->ack, regist_ack_tmp->index, regist_ack_tmp->passwd);
+    printf(", Worker ID : %d\n", regist_ack_tmp->index);
 #endif
     this.passwd = regist_ack_tmp->passwd;
     this.index  = regist_ack_tmp->index;
@@ -134,6 +140,7 @@ int main(int argc, char **argv)
             sprintf(result_f,"%u.data", getpid());
             FILE *inFile = fopen(data_f, "wb");
             MD5_CTX mdContext;
+            unsigned char tmp_md5[MD5_DIGEST_LENGTH];
 
             void *p = &data_hdr;
             int bytes, bytes_read, bytes_writen;
@@ -147,15 +154,7 @@ int main(int argc, char **argv)
                 p += bytes_read;
             }
 
-#ifdef WORKER_DEBUG
-            printf("file md5: ");
-            for(int n=0; n<MD5_DIGEST_LENGTH; n++)
-                printf("%02x", data_hdr.md5[n]);
-            printf("file length: %d", data_hdr.file_len);
-            printf("\n");
-#endif
             bytes = data_hdr.file_len;
-            unsigned char tmp_md5[MD5_DIGEST_LENGTH];
             MD5_Init (&mdContext);
             while (bytes > 0) {
                 bytes_read = Recv(connfd, buf, min(sizeof(buf),bytes), 0);
@@ -172,6 +171,8 @@ int main(int argc, char **argv)
             }
             Fclose(inFile);
 
+            sleep(2);
+
             FILE *outFile = fopen(result_f, "rb");
             result_hdr.file_len = 0;
             MD5_Init (&mdContext);
@@ -180,13 +181,7 @@ int main(int argc, char **argv)
                 MD5_Update (&mdContext, buf, bytes);
             }
             MD5_Final (result_hdr.md5,&mdContext);
-#ifdef WORKER_DEBUG
-            printf("file md5: ");
-            for(int n=0; n<MD5_DIGEST_LENGTH; n++)
-                printf("%02x", result_hdr.md5[n]);
-            printf("file length: %d", result_hdr.file_len);
-            printf("\n");
-#endif
+
             p = &result_hdr;
             bytes =sizeof(result_hdr);
             while (bytes > 0) {
@@ -221,9 +216,6 @@ int main(int argc, char **argv)
             remove(data_f);
             remove(result_f);
             close(connfd);
-
-                
-                       
         }
 
         close(connfd);

@@ -80,6 +80,9 @@ int main()
                         if (connect(testfd, (struct sockaddr *)&testaddr,
                                      sizeof(testaddr)) < 0) {
                                 workers[i].status = WKR_FLD;
+#ifdef PROXY_DEBUG
+                                printf("Worker %d failed\n", i);
+#endif
                         }
                         close(testfd);
                         break;
@@ -90,10 +93,10 @@ int main()
             if ((request.type == GET) || (request.type == REGET)) {
 #ifdef PROXY_DEBUG
             if (request.type == GET) {
-                printf("GETTING new worker.\n");
+                printf("GETTING new worker, ");
             }
             else if (request.type == REGET) {
-                printf("REGETTING new worker.\n");
+                printf("REGETTING new worker, ");
             }
 #endif
                 int loop = nworker;
@@ -140,6 +143,7 @@ int main()
             /* Handle worker register */
             if (request.type == RGST) {
                 regist *tmp = (regist *)&request;
+                int valid =0;
 #ifdef PROXY_DEBUG
                 printf("REGISTERING.\n");
 #endif
@@ -159,9 +163,6 @@ int main()
                 }
                 if (i == nworker) {
                     nworker++;
-#ifdef PROXY_PORT
-                    printf("Now %d workers.\n", nworker);
-#endif
                     if (nworker > DEFAULT_NWORKER) {
                         workers = Realloc(workers, sizeof(worker)*(++nworker));
                     }
@@ -172,16 +173,13 @@ int main()
                     wkr_tmp->port = tmp->port;
                     wkr_tmp->addr = tmp->addr;
 #ifdef PROXY_PORT
-                        printf("New worker listenning addr : %s, port : %d\n", inet_ntoa(*(struct in_addr *)&tmp->addr), ntohs(tmp->port));
+                        printf("New worker addr : %s, port : %d, ID : %d. now worker : %d\n", inet_ntoa(*(struct in_addr *)&tmp->addr), ntohs(tmp->port), i, nworker);
 #endif
                 }
                 regist_ack *result = (regist_ack *)&response;
                 result->ack = 1;
                 result->index = i;
                 result->passwd = workers[i].passwd;
-#ifdef PROXY_PORT
-                printf("ack : %"PRIu16", index : %"PRIu32", passwd : %"PRIu32"\n", result->ack, result->index, result->passwd);
-#endif
 
                 msgsend.msg_name = &rqstaddr;
                 msgsend.msg_namelen = sizeof(rqstaddr);
@@ -197,8 +195,9 @@ int main()
             /* Handle worker information update */
             else if(request.type == UPDT) {
 #ifdef PROXY_DEBUG
-            printf("UPDATE\n");
+            printf("UPDATE.\n");
 #endif
+
                 update *update_tmp = (update *)&request;
                 int valid =0;
                 if (workers[update_tmp->index].passwd == update_tmp->passwd) {
