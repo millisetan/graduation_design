@@ -31,6 +31,7 @@ int send_and_get (const char *data_f, const char *result_f)
     signal(SIGPIPE, SIG_IGN);
 REGET:
     if (is_reget) {
+        exit(1);
         reget *reget_tmp = (reget *)&request;
         reget_tmp->type = REGET;
         reget_tmp->port = workeraddr.sin_port;
@@ -74,6 +75,9 @@ REGET:
     MD5_Final (data_hdr.md5,&mdContext);
 
     /* send file header(file length and md5) */
+#ifdef CLIENT_DEBUG
+    printf("send data header.\n");
+#endif
     p = &data_hdr;
     bytes =sizeof(data_hdr);
     while (bytes > 0) {
@@ -93,6 +97,10 @@ REGET:
     }
 
     /* Send data file */
+#ifdef CLIENT_DEBUG
+    printf("send data file.\n");
+    printf("file length: %lu\n", data_hdr.file_len);
+#endif
     fseek(inFile, 0, SEEK_SET);
     while (!feof(inFile)) {
         bytes = fread(buf, 1, sizeof(buf), inFile);
@@ -116,6 +124,9 @@ REGET:
         
     
     /* recieve file header(file length and md5) */
+#ifdef CLIENT_DEBUG
+    printf("recieve result header.\n");
+#endif
     p = &result_hdr;
     bytes =sizeof(result_hdr);
     fd_set rset;
@@ -143,6 +154,10 @@ REGET:
 
 
     /* recieve result file */
+#ifdef CLIENT_DEBUG
+    printf("recieve result file.\n");
+    printf("file length: %lu\n", result_hdr.file_len);
+#endif
     bytes = result_hdr.file_len;
     outFile = fopen(result_f, "wb");
     MD5_Init (&mdContext);
@@ -169,6 +184,9 @@ REGET:
         Close(workerfd);
         return 0;
     } else {
+#ifdef CLIENT_DEBUG
+    printf("EEEEEEEEE.\n");
+#endif
         remove(result_f);
         is_reget = 1;
         close(workerfd);

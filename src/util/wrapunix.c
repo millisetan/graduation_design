@@ -38,7 +38,7 @@ Realloc(void *nptr, size_t size)
 	return(ptr);
 }
 
-void
+int
 Close(int fd)
 {
 	if (close(fd) == -1)
@@ -191,15 +191,6 @@ Sigprocmask(int how, const sigset_t *set, sigset_t *oset)
 		err_sys("sigprocmask error");
 }
 
-char *
-Strdup(const char *str)
-{
-	char	*ptr;
-
-	if ( (ptr = strdup(str)) == NULL)
-		err_sys("strdup error");
-	return(ptr);
-}
 
 long
 Sysconf(int name)

@@ -32,7 +32,7 @@ void *request_counter(void *arg)
             continue;
         }
 #ifdef WORKER_DEBUG
-        printf("Request handle by pid %d, return value %d", pid, WEXITSTATUS(status));
+        printf("Request handle by pid %d, return value %d\n", pid, WEXITSTATUS(status));
 #endif
         sprintf(data_f,"%u.data", pid);
         sprintf(result_f,"%u.data", pid);
@@ -41,6 +41,9 @@ void *request_counter(void *arg)
 
         Pthread_mutex_lock(&count_mutex);
         load--;
+#ifdef WORKER_DEBUG
+        printf("request count decrement : %d.\n", load);
+#endif
         diff = load - pre_load;
         Pthread_mutex_unlock(&count_mutex);
 
@@ -89,6 +92,8 @@ int main(int argc, char **argv)
     update_ack *update_ack_tmp;
     request_t request_cli;
     response_t response_cli;
+    fd_set rset, wset;
+    struct timeval time_out;
 
     /* Option and config file */
     openlog(NULL,LOG_CONS|LOG_PID, LOG_LOCAL1);
@@ -141,14 +146,36 @@ int main(int argc, char **argv)
             FILE *inFile = fopen(data_f, "wb");
             MD5_CTX mdContext;
             unsigned char tmp_md5[MD5_DIGEST_LENGTH];
+            int error;
+            socklen_t err_size = sizeof(error);
 
             void *p = &data_hdr;
             int bytes, bytes_read, bytes_writen;
             bytes =sizeof(data_hdr);
+            time_out.tv_sec = 60;
+            time_out.tv_usec = 0;
             while (bytes > 0) {
+                FD_ZERO(&rset);
+                FD_SET(connfd, &rset);
+                if (!select(connfd +1, &rset, NULL, NULL, &time_out)) {
+#ifdef WORKER_DEBUG
+                    printf("recieving data from client timeout, terminate.\n");
+#endif
+                    close(connfd);
+                    exit(1);
+                }
+                getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
+                if (error) {
+                    close(connfd);
+                    errno = error;
+                    exit(1);
+                }
                 bytes_read = recv(connfd, p, bytes, 0);
-                if (bytes_read == -1) {
-                    err_sys("send error");
+                if (!bytes_read) {
+#ifdef WORKER_DEBUG
+                    printf("Client abort conncetion, terminate.\n");
+#endif
+                    exit(1);
                 }
                 bytes -= bytes_read;
                 p += bytes_read;
@@ -157,21 +184,44 @@ int main(int argc, char **argv)
             bytes = data_hdr.file_len;
             MD5_Init (&mdContext);
             while (bytes > 0) {
+                FD_ZERO(&rset);
+                FD_SET(connfd, &rset);
+                if (!select(connfd +1, &rset, NULL, NULL, &time_out)) {
+#ifdef WORKER_DEBUG
+                    printf("recieving data from client timeout, terminate.\n");
+#endif
+                    Fclose(inFile);
+                    close(connfd);
+                    exit(1);
+                }
+                getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
+                if (error) {
+                    Fclose(inFile);
+                    close(connfd);
+                    errno = error;
+                    exit(1);
+                }
                 bytes_read = Recv(connfd, buf, min(sizeof(buf),bytes), 0);
+                if (!bytes_read) {
+#ifdef WORKER_DEBUG
+                    printf("Client abort conncetion, terminate.\n");
+#endif
+                    exit(1);
+                }
                 MD5_Update (&mdContext, buf, bytes_read);
                 bytes_writen = fwrite(buf, 1, bytes_read, inFile); 
-                if (bytes_read != bytes_writen) {
-                    printf("read != write\n");
-                }
                 bytes -= bytes_read;
             }
             MD5_Final (tmp_md5,&mdContext);
-            if (!strncmp(tmp_md5, data_hdr.md5, MD5_DIGEST_LENGTH)) {
-                printf("md5 test successful!\n");
+            if (strncmp(tmp_md5, data_hdr.md5, MD5_DIGEST_LENGTH)) {
+                printf("md5 test failed, terminate.\n");
+                Fclose(inFile);
+                close(connfd);
+                exit(1);
             }
             Fclose(inFile);
 
-            sleep(2);
+            
 
             FILE *outFile = fopen(result_f, "rb");
             result_hdr.file_len = 0;
@@ -185,33 +235,50 @@ int main(int argc, char **argv)
             p = &result_hdr;
             bytes =sizeof(result_hdr);
             while (bytes > 0) {
-                bytes_writen = send(connfd, p, bytes, 0);
-                if (bytes_writen == -1) {
-                    err_sys("send error");
+                FD_ZERO(&wset);
+                FD_SET(connfd, &wset);
+                select(connfd +1, NULL, &wset, NULL, NULL);
+                getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
+                if (error) {
+                    Fclose(outFile);
+                    remove(data_f);
+                    remove(result_f);
+                    close(connfd);
+                    exit(1);
                 }
+                bytes_writen = send(connfd, p, bytes, 0);
                 bytes -= bytes_writen;
                 p += bytes_writen;
             }
 
             fseek(outFile, 0, SEEK_SET);
-            while (1) {
-                bytes = fread(buf, 1, sizeof(buf), outFile);
-                if (bytes == 0) {
-                    break;
-                }
-                if (bytes == -1) {
-
-                }
+            bytes = result_hdr.file_len;
+            printf("file length : %d \n", bytes);
+            while (bytes >0) {
+                bytes_read = fread(buf, 1, sizeof(buf), outFile);
+                bytes -= bytes_read;
+                printf("bytes : %d, bytes_read : %d\n", bytes, bytes_read);
                 p = buf;
-                while (bytes > 0) {
-                    bytes_writen = send(connfd, p, bytes, 0);
-                    if (bytes_writen == -1) {
-                        err_sys("send error");
+                while (bytes_read > 0) {
+                    printf("bytes_read : %d\n", bytes_read);
+                    FD_ZERO(&wset);
+                    FD_SET(connfd, &wset);
+                    //select(connfd +1, NULL, &wset, NULL, NULL);
+                    getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
+                    if (error) {
+                        printf("EEEEEE\n");
+                        Fclose(outFile);
+                        remove(data_f);
+                        remove(result_f);
+                        close(connfd);
+                        exit(1);
                     }
-                    bytes -= bytes_writen;
-                            p += bytes_writen;
+                    bytes_writen = send(connfd, p, bytes_read, 0);
+                    bytes_read -= bytes_writen;
+                    p += bytes_writen;
                 }
             }
+            printf("AAAAAA\n");
             Fclose(outFile);
             remove(data_f);
             remove(result_f);
@@ -222,7 +289,7 @@ int main(int argc, char **argv)
         Pthread_mutex_lock(&count_mutex);
         load++;
 #ifdef WORKER_DEBUG
-        printf("request count: %d.\n", load);
+        printf("request count increment: %d.\n", load);
 #endif
         diff = load - pre_load;
         Pthread_mutex_unlock(&count_mutex);
