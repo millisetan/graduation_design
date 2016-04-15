@@ -5,7 +5,6 @@
 #ifdef  WORKER_DEBUG
 #include <inttypes.h>
 #endif
-// Error result_f 
 
 pthread_t ntid;
 pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -24,7 +23,6 @@ void *request_counter(void *arg)
     int status, diff, tmp_load;
     pid_t pid;
     update *update_tmp;
-    char data_f[20], result_f[20];
     request_t request;
     response_t response;
     for ( ; ; ) {
@@ -34,11 +32,6 @@ void *request_counter(void *arg)
 #ifdef WORKER_DEBUG
         printf("Request handle by pid %d, return value %d\n", pid, WEXITSTATUS(status));
 #endif
-        sprintf(data_f,"%u.data", pid);
-        sprintf(result_f,"%u.data", pid);
-        remove(data_f);
-        remove(result_f);
-
         Pthread_mutex_lock(&count_mutex);
         load--;
 #ifdef WORKER_DEBUG
@@ -137,26 +130,21 @@ int main(int argc, char **argv)
     for( ; ; ) {
         connfd = Accept(listenfd, NULL, NULL);
         if (!Fork()) {
-#ifdef WORKER_DEBUG
-            printf("Accept new request.\n");
-#endif
-            char data_f[20], result_f[20];
-            sprintf(data_f,"%u.data", getpid());
-            sprintf(result_f,"%u.data", getpid());
-            FILE *inFile = fopen(data_f, "wb");
+            FILE *inFile, *outFile;
             MD5_CTX mdContext;
             unsigned char tmp_md5[MD5_DIGEST_LENGTH];
             int error;
             socklen_t err_size = sizeof(error);
-
             void *p = &data_hdr;
             int bytes, bytes_read, bytes_writen;
+
+            /* Recieve data file header */
             bytes =sizeof(data_hdr);
-            time_out.tv_sec = 60;
-            time_out.tv_usec = 0;
             while (bytes > 0) {
                 FD_ZERO(&rset);
                 FD_SET(connfd, &rset);
+                time_out.tv_sec = 60;
+                time_out.tv_usec = 0;
                 if (!select(connfd +1, &rset, NULL, NULL, &time_out)) {
 #ifdef WORKER_DEBUG
                     printf("recieving data from client timeout, terminate.\n");
@@ -181,22 +169,24 @@ int main(int argc, char **argv)
                 p += bytes_read;
             }
 
+            /* Recieve data file content */
+            inFile = tmpfile();
             bytes = data_hdr.file_len;
             MD5_Init (&mdContext);
             while (bytes > 0) {
                 FD_ZERO(&rset);
                 FD_SET(connfd, &rset);
+                time_out.tv_sec = 60;
+                time_out.tv_usec = 0;
                 if (!select(connfd +1, &rset, NULL, NULL, &time_out)) {
 #ifdef WORKER_DEBUG
                     printf("recieving data from client timeout, terminate.\n");
 #endif
-                    Fclose(inFile);
                     close(connfd);
                     exit(1);
                 }
                 getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
                 if (error) {
-                    Fclose(inFile);
                     close(connfd);
                     errno = error;
                     exit(1);
@@ -214,16 +204,17 @@ int main(int argc, char **argv)
             }
             MD5_Final (tmp_md5,&mdContext);
             if (strncmp(tmp_md5, data_hdr.md5, MD5_DIGEST_LENGTH)) {
+#ifdef WORKER_DEBUG
                 printf("md5 test failed, terminate.\n");
-                Fclose(inFile);
+#endif
                 close(connfd);
                 exit(1);
             }
-            Fclose(inFile);
 
-            
 
-            FILE *outFile = fopen(result_f, "rb");
+            /* prepare result file header */
+            outFile = inFile; //error file
+            fseek(outFile, 0, SEEK_SET);
             result_hdr.file_len = 0;
             MD5_Init (&mdContext);
             while ((bytes = fread (buf, 1, BUFSIZE, outFile)) != 0) {
@@ -232,6 +223,12 @@ int main(int argc, char **argv)
             }
             MD5_Final (result_hdr.md5,&mdContext);
 
+#ifdef WORKER_DEBUG
+                printf("EEEEEEEEE.\n");
+                sleep(10);
+#endif
+
+            /* Send result file header */
             p = &result_hdr;
             bytes =sizeof(result_hdr);
             while (bytes > 0) {
@@ -240,9 +237,10 @@ int main(int argc, char **argv)
                 select(connfd +1, NULL, &wset, NULL, NULL);
                 getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
                 if (error) {
-                    Fclose(outFile);
-                    remove(data_f);
-                    remove(result_f);
+                    if (error == EPIPE) {
+
+                    }
+                    errno  = error;
                     close(connfd);
                     exit(1);
                 }
@@ -251,25 +249,23 @@ int main(int argc, char **argv)
                 p += bytes_writen;
             }
 
+            /* Send result file content */
             fseek(outFile, 0, SEEK_SET);
             bytes = result_hdr.file_len;
-            printf("file length : %d \n", bytes);
             while (bytes >0) {
                 bytes_read = fread(buf, 1, sizeof(buf), outFile);
                 bytes -= bytes_read;
-                printf("bytes : %d, bytes_read : %d\n", bytes, bytes_read);
                 p = buf;
                 while (bytes_read > 0) {
-                    printf("bytes_read : %d\n", bytes_read);
                     FD_ZERO(&wset);
                     FD_SET(connfd, &wset);
-                    //select(connfd +1, NULL, &wset, NULL, NULL);
+                    select(connfd +1, NULL, &wset, NULL, NULL);
                     getsockopt(connfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
                     if (error) {
-                        printf("EEEEEE\n");
-                        Fclose(outFile);
-                        remove(data_f);
-                        remove(result_f);
+                        if (error == EPIPE) {
+
+                        }
+                        errno = error;
                         close(connfd);
                         exit(1);
                     }
@@ -278,11 +274,8 @@ int main(int argc, char **argv)
                     p += bytes_writen;
                 }
             }
-            printf("AAAAAA\n");
-            Fclose(outFile);
-            remove(data_f);
-            remove(result_f);
             close(connfd);
+            exit(0);
         }
 
         close(connfd);
