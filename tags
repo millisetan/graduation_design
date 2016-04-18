@@ -11,7 +11,7 @@ BUILDDIR	Makefile	/^BUILDDIR := build$/;"	m
 Bind	include/server.h	/^void	 Bind(int, const struct sockaddr *, socklen_t);$/;"	p	signature:(int, const struct sockaddr *, socklen_t)
 Bind	src/util/wrapsock.c	/^Bind(int fd, const struct sockaddr *sa, socklen_t salen)$/;"	f	signature:(int fd, const struct sockaddr *sa, socklen_t salen)
 CC	Makefile	/^CC := gcc # This is the main compiler$/;"	m
-CFLAGS	Makefile	/^CFLAGS := -Wall -std=c99 $/;"	m
+CFLAGS	Makefile	/^CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE$/;"	m
 CLIENT_DEBUG	src/client.c	4;"	d	file:
 Calloc	include/server.h	/^void* Calloc(size_t, size_t);$/;"	p	signature:(size_t, size_t)
 Calloc	src/util/wrapunix.c	/^Calloc(size_t n, size_t size)$/;"	f	signature:(size_t n, size_t size)
@@ -55,6 +55,7 @@ Inet6_rth_reverse	src/util/wrapsock.c	/^Inet6_rth_reverse(const void *in, void *
 Inet6_rth_segments	src/util/wrapsock.c	/^Inet6_rth_segments(const void *rthbuf)$/;"	f	signature:(const void *rthbuf)
 Inet6_rth_space	src/util/wrapsock.c	/^Inet6_rth_space(int type, int segments)$/;"	f	signature:(int type, int segments)
 Inet_ntop	src/util/wraplib.c	/^Inet_ntop(int family, const void *addrptr, char *strptr, size_t len)$/;"	f	signature:(int family, const void *addrptr, char *strptr, size_t len)
+Inet_pton	include/server.h	/^void Inet_pton(int family, const char *strptr, void *addrptr);$/;"	p	signature:(int family, const char *strptr, void *addrptr)
 Inet_pton	src/util/wraplib.c	/^Inet_pton(int family, const char *strptr, void *addrptr)$/;"	f	signature:(int family, const char *strptr, void *addrptr)
 Ioctl	src/util/wrapunix.c	/^Ioctl(int fd, int request, void *arg)$/;"	f	signature:(int fd, int request, void *arg)
 Kevent	src/util/wrapsock.c	/^Kevent(int kq, const struct kevent *changelist, int nchanges,$/;"	f	signature:(int kq, const struct kevent *changelist, int nchanges, struct kevent *eventlist, int nevents, const struct timespec *timeout)
@@ -77,13 +78,9 @@ PROXY_IP	include/server.h	30;"	d
 PROXY_PORT	include/server.h	29;"	d
 Pipe	src/util/wrapunix.c	/^Pipe(int *fds)$/;"	f	signature:(int *fds)
 Poll	src/util/wrapsock.c	/^Poll(struct pollfd *fdarray, unsigned long nfds, int timeout)$/;"	f	signature:(struct pollfd *fdarray, unsigned long nfds, int timeout)
-Pthread_cond_broadcast	include/server.h	/^void	Pthread_cond_broadcast(pthread_cond_t *);$/;"	p	signature:(pthread_cond_t *)
 Pthread_cond_broadcast	src/util/wrappthread.c	/^Pthread_cond_broadcast(pthread_cond_t *cptr)$/;"	f	signature:(pthread_cond_t *cptr)
-Pthread_cond_signal	include/server.h	/^void	Pthread_cond_signal(pthread_cond_t *);$/;"	p	signature:(pthread_cond_t *)
 Pthread_cond_signal	src/util/wrappthread.c	/^Pthread_cond_signal(pthread_cond_t *cptr)$/;"	f	signature:(pthread_cond_t *cptr)
-Pthread_cond_timedwait	include/server.h	/^void	Pthread_cond_timedwait(pthread_cond_t *, pthread_mutex_t *,$/;"	p	signature:(pthread_cond_t *, pthread_mutex_t *, const struct timespec *)
 Pthread_cond_timedwait	src/util/wrappthread.c	/^Pthread_cond_timedwait(pthread_cond_t *cptr, pthread_mutex_t *mptr,$/;"	f	signature:(pthread_cond_t *cptr, pthread_mutex_t *mptr, const struct timespec *tsptr)
-Pthread_cond_wait	include/server.h	/^void	Pthread_cond_wait(pthread_cond_t *, pthread_mutex_t *);$/;"	p	signature:(pthread_cond_t *, pthread_mutex_t *)
 Pthread_cond_wait	src/util/wrappthread.c	/^Pthread_cond_wait(pthread_cond_t *cptr, pthread_mutex_t *mptr)$/;"	f	signature:(pthread_cond_t *cptr, pthread_mutex_t *mptr)
 Pthread_create	include/server.h	/^void	Pthread_create(pthread_t *, const pthread_attr_t *,$/;"	p	signature:(pthread_t *, const pthread_attr_t *, void * (*)(void *), void *)
 Pthread_create	src/util/wrappthread.c	/^Pthread_create(pthread_t *tid, const pthread_attr_t *attr,$/;"	f	signature:(pthread_t *tid, const pthread_attr_t *attr, void * (*func)(void *), void *arg)
@@ -91,7 +88,6 @@ Pthread_detach	include/server.h	/^void	Pthread_detach(pthread_t);$/;"	p	signatur
 Pthread_detach	src/util/wrappthread.c	/^Pthread_detach(pthread_t tid)$/;"	f	signature:(pthread_t tid)
 Pthread_join	include/server.h	/^void	Pthread_join(pthread_t, void **);$/;"	p	signature:(pthread_t, void **)
 Pthread_join	src/util/wrappthread.c	/^Pthread_join(pthread_t tid, void **status)$/;"	f	signature:(pthread_t tid, void **status)
-Pthread_key_create	include/server.h	/^void	Pthread_key_create(pthread_key_t *, void (*)(void *));$/;"	p	signature:(pthread_key_t *, void (*)(void *))
 Pthread_key_create	src/util/wrappthread.c	/^Pthread_key_create(pthread_key_t *key, void (*func)(void *))$/;"	f	signature:(pthread_key_t *key, void (*func)(void *))
 Pthread_kill	include/server.h	/^void	Pthread_kill(pthread_t, int);$/;"	p	signature:(pthread_t, int)
 Pthread_kill	src/util/wrappthread.c	/^Pthread_kill(pthread_t tid, int signo)$/;"	f	signature:(pthread_t tid, int signo)
@@ -101,13 +97,9 @@ Pthread_mutex_lock	include/server.h	/^void	Pthread_mutex_lock(pthread_mutex_t *)
 Pthread_mutex_lock	src/util/wrappthread.c	/^Pthread_mutex_lock(pthread_mutex_t *mptr)$/;"	f	signature:(pthread_mutex_t *mptr)
 Pthread_mutex_unlock	include/server.h	/^void	Pthread_mutex_unlock(pthread_mutex_t *);$/;"	p	signature:(pthread_mutex_t *)
 Pthread_mutex_unlock	src/util/wrappthread.c	/^Pthread_mutex_unlock(pthread_mutex_t *mptr)$/;"	f	signature:(pthread_mutex_t *mptr)
-Pthread_mutexattr_init	include/server.h	/^void	Pthread_mutexattr_init(pthread_mutexattr_t *);$/;"	p	signature:(pthread_mutexattr_t *)
 Pthread_mutexattr_init	src/util/wrappthread.c	/^Pthread_mutexattr_init(pthread_mutexattr_t *attr)$/;"	f	signature:(pthread_mutexattr_t *attr)
-Pthread_mutexattr_setpshared	include/server.h	/^void	Pthread_mutexattr_setpshared(pthread_mutexattr_t *, int);$/;"	p	signature:(pthread_mutexattr_t *, int)
 Pthread_mutexattr_setpshared	src/util/wrappthread.c	/^Pthread_mutexattr_setpshared(pthread_mutexattr_t *attr, int flag)$/;"	f	signature:(pthread_mutexattr_t *attr, int flag)
-Pthread_once	include/server.h	/^void	Pthread_once(pthread_once_t *, void (*)(void));$/;"	p	signature:(pthread_once_t *, void (*)(void))
 Pthread_once	src/util/wrappthread.c	/^Pthread_once(pthread_once_t *ptr, void (*func)(void))$/;"	f	signature:(pthread_once_t *ptr, void (*func)(void))
-Pthread_setspecific	include/server.h	/^void	Pthread_setspecific(pthread_key_t, const void *);$/;"	p	signature:(pthread_key_t, const void *)
 Pthread_setspecific	src/util/wrappthread.c	/^Pthread_setspecific(pthread_key_t key, const void *value)$/;"	f	signature:(pthread_key_t key, const void *value)
 REGET	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	e	enum:__anon1
 REGET_WORKER	src/client_win.c	20;"	d	file:
@@ -153,11 +145,9 @@ Sigfillset	src/util/wrapunix.c	/^Sigfillset(sigset_t *set)$/;"	f	signature:(sigs
 Sigismember	src/util/wrapunix.c	/^Sigismember(const sigset_t *set, int signo)$/;"	f	signature:(const sigset_t *set, int signo)
 Sigpending	src/util/wrapunix.c	/^Sigpending(sigset_t *set)$/;"	f	signature:(sigset_t *set)
 Sigprocmask	src/util/wrapunix.c	/^Sigprocmask(int how, const sigset_t *set, sigset_t *oset)$/;"	f	signature:(int how, const sigset_t *set, sigset_t *oset)
-Sockatmark	include/server.h	/^int		 Sockatmark(int);$/;"	p	signature:(int)
 Sockatmark	src/util/wrapsock.c	/^Sockatmark(int fd)$/;"	f	signature:(int fd)
 Socket	include/server.h	/^int		 Socket(int, int, int);$/;"	p	signature:(int, int, int)
 Socket	src/util/wrapsock.c	/^Socket(int family, int type, int protocol)$/;"	f	signature:(int family, int type, int protocol)
-Socketpair	include/server.h	/^void	 Socketpair(int, int, int, int *);$/;"	p	signature:(int, int, int, int *)
 Socketpair	src/util/wrapsock.c	/^Socketpair(int family, int type, int protocol, int *fd)$/;"	f	signature:(int family, int type, int protocol, int *fd)
 Sysconf	src/util/wrapunix.c	/^Sysconf(int name)$/;"	f	signature:(int name)
 Sysctl	src/util/wrapunix.c	/^Sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp,$/;"	f	signature:(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp, size_t newlen)
@@ -191,6 +181,8 @@ __anon13::port	include/server.h	/^    uint16_t port;$/;"	m	struct:__anon13	acces
 __anon13::status	include/server.h	/^    int status;$/;"	m	struct:__anon13	access:public
 __anon14::file_len	include/server.h	/^    unsigned long file_len;$/;"	m	struct:__anon14	access:public
 __anon14::md5	include/server.h	/^	unsigned char md5[MD5_DIGEST_LENGTH];$/;"	m	struct:__anon14	access:public
+__anon15::seq	include/server.h	/^    uint32_t seq;$/;"	m	struct:__anon15	access:public
+__anon15::ts	include/server.h	/^    uint32_t ts;$/;"	m	struct:__anon15	access:public
 __anon2::data	include/server.h	/^    char data[16];$/;"	m	struct:__anon2	access:public
 __anon2::type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon2	access:public
 __anon3::ack	include/server.h	/^    uint16_t ack;$/;"	m	struct:__anon3	access:public
@@ -246,20 +238,14 @@ file_hdr	include/server.h	/^} file_hdr;$/;"	t	typeref:struct:__anon14
 file_len	include/server.h	/^    unsigned long file_len;$/;"	m	struct:__anon14	access:public
 get	include/server.h	/^} get;$/;"	t	typeref:struct:__anon4
 get_ack	include/server.h	/^} get_ack;$/;"	t	typeref:struct:__anon5
-hdr	src/proxy.c	/^struct hdr {$/;"	s	file:
 hdr	src/util/send_recv.c	/^static struct hdr {$/;"	s	file:
-hdr::seq	src/proxy.c	/^    uint32_t seq;$/;"	m	struct:hdr	file:	access:public
 hdr::seq	src/util/send_recv.c	/^  uint32_t	seq;	\/* sequence # *\/$/;"	m	struct:hdr	file:	access:public
-hdr::ts	src/proxy.c	/^    uint32_t ts;$/;"	m	struct:hdr	file:	access:public
 hdr::ts	src/util/send_recv.c	/^  uint32_t	ts;		\/* timestamp when sent *\/$/;"	m	struct:hdr	file:	access:public
 id	include/server.h	/^    const char *id;$/;"	m	struct:__anon12	access:public
 index	include/server.h	/^    int index;$/;"	m	struct:__anon13	access:public
 index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon10	access:public
 index	include/server.h	/^    uint32_t index;$/;"	m	struct:__anon9	access:public
-iovrecv	src/proxy.c	/^struct iovec iovsend[2], iovrecv[2];$/;"	v	typeref:struct:
-iovsend	src/proxy.c	/^struct iovec iovsend[2], iovrecv[2];$/;"	v	typeref:struct:iovec
 jmpbuf	src/util/send_recv.c	/^static sigjmp_buf	jmpbuf;$/;"	v	file:
-least_loaded	src/proxy.c	/^int nworker, wkrcur =-1, least_loaded;$/;"	v
 load	include/server.h	/^    int load;$/;"	m	struct:__anon10	access:public
 load	include/server.h	/^    int load;$/;"	m	struct:__anon13	access:public
 load	src/worker.c	/^int load, pre_load, proxyfd;$/;"	v
@@ -268,15 +254,13 @@ main	src/proxy.c	/^int main()$/;"	f
 main	src/worker.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
 max	include/server.h	36;"	d
 md5	include/server.h	/^	unsigned char md5[MD5_DIGEST_LENGTH];$/;"	m	struct:__anon14	access:public
+mesg_hdr	include/server.h	/^} mesg_hdr;$/;"	t	typeref:struct:__anon15
 mesg_mutex	src/worker.c	/^pthread_mutex_t mesg_mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
 mesg_type	include/server.h	/^typedef enum {GET, REGET, RGST, UPDT} mesg_type;$/;"	t	typeref:enum:__anon1
 min	include/server.h	35;"	d
-msgrecv	src/proxy.c	/^struct msghdr msgsend, msgrecv;$/;"	v	typeref:struct:
 msgrecv	src/util/send_recv.c	/^static struct msghdr	msgsend, msgrecv;	\/* assumed init to 0 *\/$/;"	v	typeref:struct:	file:
-msgsend	src/proxy.c	/^struct msghdr msgsend, msgrecv;$/;"	v	typeref:struct:msghdr
 msgsend	src/util/send_recv.c	/^static struct msghdr	msgsend, msgrecv;	\/* assumed init to 0 *\/$/;"	v	typeref:struct:msghdr	file:
 ntid	src/worker.c	/^pthread_t ntid;$/;"	v
-nworker	src/proxy.c	/^int nworker, wkrcur =-1, least_loaded;$/;"	v
 passwd	include/server.h	/^    int passwd;$/;"	m	struct:__anon13	access:public
 passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon10	access:public
 passwd	include/server.h	/^    uint32_t passwd;$/;"	m	struct:__anon9	access:public
@@ -294,12 +278,9 @@ reget	include/server.h	/^} reget;$/;"	t	typeref:struct:__anon6
 reget_ack	include/server.h	/^} reget_ack;$/;"	t	typeref:struct:__anon7
 regist	include/server.h	/^} regist; $/;"	t	typeref:struct:__anon8
 regist_ack	include/server.h	/^} regist_ack; $/;"	t	typeref:struct:__anon9
-request	src/proxy.c	/^request_t request;$/;"	v
 request_counter	src/worker.c	/^void *request_counter(void *arg)$/;"	f	signature:(void *arg)
 request_t	include/server.h	/^} request_t;$/;"	t	typeref:struct:__anon2
-response	src/proxy.c	/^response_t response;$/;"	v
 response_t	include/server.h	/^} response_t;$/;"	t	typeref:struct:__anon3
-rqstaddr	src/proxy.c	/^struct sockaddr_in rqstaddr;$/;"	v	typeref:struct:sockaddr_in
 rtt_base	include/rtt.h	/^  uint32_t	rtt_base;	\/* #sec since 1\/1\/1970 at start *\/$/;"	m	struct:rtt_info	access:public
 rtt_d_flag	src/util/rtt.c	/^int		rtt_d_flag = 0;		\/* debug flag; can be set by caller *\/$/;"	v
 rtt_debug	include/rtt.h	/^void	 rtt_debug(struct rtt_info *);$/;"	p	signature:(struct rtt_info *)
@@ -332,17 +313,16 @@ rtt_ts	src/util/rtt.c	/^rtt_ts(struct rtt_info *ptr)$/;"	f	signature:(struct rtt
 rttinfo	src/util/send_recv.c	/^static struct rtt_info   rttinfo;$/;"	v	typeref:struct:rtt_info	file:
 rttinit	src/util/send_recv.c	/^static int	rttinit = 0;$/;"	v	file:
 send_and_get	src/client.c	/^int send_and_get (const char *data_f, const char *result_f)$/;"	f	signature:(const char *data_f, const char *result_f)
-send_recv_hdr	src/proxy.c	/^} send_recv_hdr;$/;"	v	typeref:struct:hdr
 senddata	src/client_win.c	/^int __cdecl senddata(char *dataDath, char *resultPath) $/;"	f	signature:(char *dataDath, char *resultPath)
 sendhdr	src/util/send_recv.c	/^} sendhdr, recvhdr;$/;"	v	typeref:struct:hdr	file:
-seq	src/proxy.c	/^    uint32_t seq;$/;"	m	struct:hdr	file:	access:public
+seq	include/server.h	/^    uint32_t seq;$/;"	m	struct:__anon15	access:public
 seq	src/util/send_recv.c	/^  uint32_t	seq;	\/* sequence # *\/$/;"	m	struct:hdr	file:	access:public
 server_conf	include/server.h	/^} server_conf;$/;"	t	typeref:struct:__anon12
 sig_alrm	src/util/send_recv.c	/^sig_alrm(int signo)$/;"	f	file:	signature:(int signo)
 sig_alrm	src/util/send_recv.c	/^static void	sig_alrm(int signo);$/;"	p	file:	signature:(int signo)
 status	include/server.h	/^    int status;$/;"	m	struct:__anon13	access:public
 this	src/worker.c	/^worker this;$/;"	v
-ts	src/proxy.c	/^    uint32_t ts;$/;"	m	struct:hdr	file:	access:public
+ts	include/server.h	/^    uint32_t ts;$/;"	m	struct:__anon15	access:public
 ts	src/util/send_recv.c	/^  uint32_t	ts;		\/* timestamp when sent *\/$/;"	m	struct:hdr	file:	access:public
 type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon10	access:public
 type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon2	access:public
@@ -351,6 +331,4 @@ type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon6	access:public
 type	include/server.h	/^    mesg_type type;$/;"	m	struct:__anon8	access:public
 update	include/server.h	/^} update;$/;"	t	typeref:struct:__anon10
 update_ack	include/server.h	/^} update_ack; $/;"	t	typeref:struct:__anon11
-wkrcur	src/proxy.c	/^int nworker, wkrcur =-1, least_loaded;$/;"	v
 worker	include/server.h	/^} worker; $/;"	t	typeref:struct:__anon13
-workers	src/proxy.c	/^worker *workers;$/;"	v

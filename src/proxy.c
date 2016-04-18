@@ -5,24 +5,43 @@
 #ifdef  PROXY_DEBUG
 #include <inttypes.h>
 #endif
-worker *workers;
-int nworker, wkrcur =-1, least_loaded;
-struct hdr {
-    uint32_t seq;
-    uint32_t ts;
-} send_recv_hdr;
-request_t request;
-response_t response;
-struct msghdr msgsend, msgrecv;
-struct iovec iovsend[2], iovrecv[2];
-struct sockaddr_in rqstaddr;
+
+
+ #define RECV_MESG(fd)  msgrecv.msg_name = &rqstaddr;\
+                        msgrecv.msg_namelen = sizeof(rqstaddr);\
+                        msgrecv.msg_iov = iovrecv;\
+                        msgrecv.msg_iovlen = 2;\
+                        iovrecv[0].iov_base = &send_recv_hdr;\
+                        iovrecv[0].iov_len = sizeof(send_recv_hdr);\
+                        iovrecv[1].iov_base = &request;\
+                        iovrecv[1].iov_len = sizeof(request_t);\
+                        Recvmsg(fd, &msgrecv, 0);
+
+#define SEND_MESG(fd)   msgsend.msg_name = &rqstaddr;\
+                        msgsend.msg_namelen = sizeof(rqstaddr);\
+                        msgsend.msg_iov = iovsend;\
+                        msgsend.msg_iovlen = 2;\
+                        iovsend[0].iov_base = &send_recv_hdr;\
+                        iovsend[0].iov_len = sizeof(send_recv_hdr);\
+                        iovsend[1].iov_base = &response;\
+                        iovsend[1].iov_len = sizeof(response_t);\
+                        Sendmsg(fd, &msgsend, 0);
+
+
+static struct msghdr msgsend, msgrecv;
+static struct iovec iovsend[2], iovrecv[2];
+static struct sockaddr_in rqstaddr;
+static struct sockaddr_in clilstnaddr, wkrlstnaddr, testaddr;
 
 int main()
 {
-    int clifd, wkrfd, testfd, option =1, maxfdp, activity;
-    int mesg_len;
+    int clifd, wkrfd, testfd, option =1;
+    int nworker =0, wkrcur =-1, lst_ind =0, nrequest =0, nfailed =0;
     fd_set rset;
-    struct sockaddr_in clilstnaddr, wkrlstnaddr, testaddr;
+    worker *workers;
+    request_t request;
+    response_t response;
+    dg_hdr send_recv_hdr;
 
     /* Listenning for client */
     clifd = Socket(AF_INET, SOCK_DGRAM, 0);
@@ -49,26 +68,16 @@ int main()
     for ( ; ; ) {
         FD_SET(clifd, &rset);
         FD_SET(wkrfd, &rset);
-        activity  = Select( (clifd>wkrfd ? clifd : wkrfd)+1, &rset, NULL, NULL, NULL);
+        Select( (clifd>wkrfd ? clifd : wkrfd)+1, &rset, NULL, NULL, NULL);
 
         /* Handle client request */
         if (FD_ISSET(clifd, &rset)) { 
-            /* Recieve request message */
-            msgrecv.msg_name = &rqstaddr;
-            msgrecv.msg_namelen = sizeof(rqstaddr);
-            msgrecv.msg_iov = iovrecv;
-            msgrecv.msg_iovlen = 2;
-            iovrecv[0].iov_base = &send_recv_hdr;
-            iovrecv[0].iov_len = sizeof(struct hdr);
-            iovrecv[1].iov_base = &request;
-            iovrecv[1].iov_len = sizeof(request_t);
-            Recvmsg(clifd, &msgrecv, 0);
+            RECV_MESG(clifd);
             /* Test worker avaliability for reget worker */
             if (request.type == REGET) {
                 /* check worker available */
                 reget *tmp = (reget *)&request;
-                int i;
-                for (i=0; i<nworker; i++) {
+                for (int i=0; i<nworker; i++) {
                     if ((tmp->port == workers[i].port) &&
                         (tmp->addr == workers[i].addr)) {
                         if (workers[i].status == WKR_FLD) break;
@@ -79,10 +88,19 @@ int main()
                         testaddr.sin_addr.s_addr = tmp->addr;
                         if (connect(testfd, (struct sockaddr *)&testaddr,
                                      sizeof(testaddr)) < 0) {
-                                workers[i].status = WKR_FLD;
+                            workers[i].status = WKR_FLD;
 #ifdef PROXY_DEBUG
-                                printf("Worker %d failed\n", i);
+                            printf("Worker %d failed\n", i);
 #endif
+                            if ((++nfailed < nworker) && (i == lst_ind)) {
+                                for (int j =0; j < nworker; j++) {
+                                    if ( (workers[j].load < workers[lst_ind].load) &&
+                                         (workers[j].status != WKR_FLD)) {
+                                        lst_ind = j;
+                                    }
+                                }
+                                workers[lst_ind].status = WKR_RDY;
+                            }
                         }
                         close(testfd);
                         break;
@@ -92,54 +110,43 @@ int main()
             /* Send response back */
             if ((request.type == GET) || (request.type == REGET)) {
 #ifdef PROXY_DEBUG
-            if (request.type == GET) {
-                printf("GETTING new worker, ");
-            }
-            else if (request.type == REGET) {
-                printf("REGETTING new worker, ");
-            }
-#endif
-                int loop = nworker;
-                do {
-                    wkrcur = (wkrcur +1)%nworker;
-                } while((workers[wkrcur].status != WKR_RDY) && --loop);
-                get_ack *result = (get_ack *)&response;
-                if(workers[wkrcur].status == WKR_RDY) {
-#ifdef PROXY_DEBUG
-                    printf("select worker id: %u\n", wkrcur);
-#endif
-                    result->ack = 1;
-                    result->port = workers[wkrcur].port;
-                    result->addr = workers[wkrcur].addr;
-                } else {
-                    result->ack = 0;
-                    result->port = 0;
-                    result->addr = 0;
+                if (request.type == GET) {
+                    printf("GETTING new worker, ");
                 }
-                msgsend.msg_name = &rqstaddr;
-                msgsend.msg_namelen = sizeof(rqstaddr);
-                msgsend.msg_iov = iovsend;
-                msgsend.msg_iovlen = 2;
-                iovsend[0].iov_base = &send_recv_hdr;
-                iovsend[0].iov_len = sizeof(struct hdr);
-                iovsend[1].iov_base = &response;
-                iovsend[1].iov_len = sizeof(response_t);
-                Sendmsg(clifd, &msgsend, 0);
+                else if (request.type == REGET) {
+                    printf("REGETTING new worker, ");
+                }
+#endif
+                get_ack *result = (get_ack *)&response;
+                if (nfailed < nworker) {
+                    result->ack = 0; //default ack;
+                } else {
+                    result->ack = 2; // all workers failed;
+                }
+                for (int i =1; i <= nworker; i++) {
+                    if (workers[(wkrcur+i)%nworker].status == WKR_RDY) {
+                        wkrcur = (wkrcur+i)%nworker;
+                        result->ack = 1; 
+#ifdef PROXY_DEBUG
+                        printf("select worker id: %u\n", wkrcur);
+#endif
+                        break;
+                    }
+                }
+#ifdef PROXY_DEBUG
+                if (result->ack != 1) { 
+                    printf("no availble worker\n");
+                }
+#endif
+                
+                result->port = workers[wkrcur].port;
+                result->addr = workers[wkrcur].addr;
+                SEND_MESG(clifd);
             }
         }
         /* Handle worker request */
         if (FD_ISSET(wkrfd, &rset)) {
-            /* Recieve worker request message */
-            msgrecv.msg_name = &rqstaddr;
-            msgrecv.msg_namelen = sizeof(rqstaddr);
-            msgrecv.msg_iov = iovrecv;
-            msgrecv.msg_iovlen = 2;
-            iovrecv[0].iov_base = &send_recv_hdr;
-            iovrecv[0].iov_len = sizeof(struct hdr);
-            iovrecv[1].iov_base = &request;
-            iovrecv[1].iov_len = sizeof(request_t);
-            Recvmsg(wkrfd, &msgrecv, 0);
-
+            RECV_MESG(wkrfd);
             /* Handle worker register */
             if (request.type == RGST) {
                 regist *tmp = (regist *)&request;
@@ -180,17 +187,7 @@ int main()
                 result->ack = 1;
                 result->index = i;
                 result->passwd = workers[i].passwd;
-
-                msgsend.msg_name = &rqstaddr;
-                msgsend.msg_namelen = sizeof(rqstaddr);
-                msgsend.msg_iov = iovsend;
-                msgsend.msg_iovlen = 2;
-                iovsend[0].iov_base = &send_recv_hdr;
-                iovsend[0].iov_len = sizeof(struct hdr);
-                iovsend[1].iov_base = &response;
-                iovsend[1].iov_len = sizeof(response_t);
-                Sendmsg(wkrfd, &msgsend, 0);
-
+                SEND_MESG(wkrfd);
             }
             /* Handle worker information update */
             else if(request.type == UPDT) {
@@ -209,27 +206,27 @@ int main()
 #ifdef PROXY_DEBUG
                     printf("Worker ID: %u, update value: %u\n", update_tmp->index, update_tmp->load);
 #endif
-                    if (update_tmp->index == least_loaded) {
-                        if (workers[least_loaded].load < update_tmp->load) {
-                            workers[least_loaded].load = update_tmp->load;
-                            int i;
-                            for (i =0; i < nworker; i++) {
-                                if (workers[i].load < workers[least_loaded].load) {
-                                    least_loaded = i;
+                    if (update_tmp->index == lst_ind) {
+                        if (workers[lst_ind].load < update_tmp->load) {
+                            workers[lst_ind].load = update_tmp->load;
+                            for (int i =0; i < nworker; i++) {
+                                if ( (workers[i].load < workers[lst_ind].load) &&
+                                     (workers[i].status != WKR_FLD)) {
+                                    lst_ind = i;
                                 }
                             }
-                            workers[least_loaded].status = WKR_RDY;
+                            workers[lst_ind].status = WKR_RDY;
                         } else {
-                            workers[least_loaded].load = update_tmp->load;
+                            workers[lst_ind].load = update_tmp->load;
                         }
                     } else {
                         workers[update_tmp->index].load = update_tmp->load;
-                        if (update_tmp->load > (workers[least_loaded].load + 50)) {
+                        if (update_tmp->load > (workers[lst_ind].load + 50)) {
                             workers[update_tmp->index].status = WKR_OVL;
-                        } else if (update_tmp->load >= workers[least_loaded].load) {
+                        } else if (update_tmp->load >= workers[lst_ind].load) {
                             workers[update_tmp->index].status = WKR_RDY;
                         } else {
-                            least_loaded = update_tmp->index;
+                            lst_ind = update_tmp->index;
                         }
                     }
                 }
@@ -248,7 +245,7 @@ int main()
                 msgsend.msg_iov = iovsend;
                 msgsend.msg_iovlen = 2;
                 iovsend[0].iov_base = &send_recv_hdr;
-                iovsend[0].iov_len = sizeof(struct hdr);
+                iovsend[0].iov_len = sizeof(send_recv_hdr);
                 iovsend[1].iov_base = &response;
                 iovsend[1].iov_len = sizeof(response_t);
                 Sendmsg(wkrfd, &msgsend, 0);

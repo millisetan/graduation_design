@@ -21,52 +21,49 @@ void *request_counter(void *arg)
 {
     update_ack *update_ack_tmp;
     int status, diff, tmp_load;
-    pid_t pid;
     update *update_tmp;
+    int error = waitpid((intptr_t)arg, &status, 0);
+#ifdef WORKER_DEBUG
+    printf("Request handle by pid %d, return value %d\n", (intptr_t)arg, WEXITSTATUS(status));
+#endif
+    Pthread_mutex_lock(&count_mutex);
+    load--;
+#ifdef WORKER_DEBUG
+    printf("request count decrement : %d.\n", load);
+#endif
+    diff = load - pre_load;
+    Pthread_mutex_unlock(&count_mutex);
+
+    /* foward count to proxy */
+    
+    if ( (diff > -7) && (diff < 7)){
+        pthread_exit(NULL);
+    }
+
     request_t request;
     response_t response;
-    for ( ; ; ) {
-        if ( (pid = waitpid(-1, &status, 0)) == -1) {
-            continue;
-        }
-#ifdef WORKER_DEBUG
-        printf("Request handle by pid %d, return value %d\n", pid, WEXITSTATUS(status));
-#endif
-        Pthread_mutex_lock(&count_mutex);
-        load--;
-#ifdef WORKER_DEBUG
-        printf("request count decrement : %d.\n", load);
-#endif
-        diff = load - pre_load;
-        Pthread_mutex_unlock(&count_mutex);
+    update_tmp = (update *)&request;
+    update_tmp->type = UPDT;
+    update_tmp->index = this.index;
+    update_tmp->passwd = this.passwd;
 
-        /* foward count to proxy */
-        
-        if ( (diff > -7) && (diff < 7)) continue;
-
-        update_tmp = (update *)&request;
-        update_tmp->type = UPDT;
-        update_tmp->index = this.index;
-        update_tmp->passwd = this.passwd;
-
-        Pthread_mutex_lock(&mesg_mutex);
-        tmp_load = load;
-        diff = tmp_load - pre_load;
-        if ( (diff <= -7) || (diff >= 7)) {
+    Pthread_mutex_lock(&mesg_mutex);
+    tmp_load = load;
+    diff = tmp_load - pre_load;
+    if ( (diff <= -7) || (diff >= 7)) {
 #ifdef WORKER_DEBUG
-            printf("UPDATING request count : %d\n", tmp_load);
+        printf("UPDATING request count : %d\n", tmp_load);
 #endif
-            update_tmp->load = tmp_load;
-            Dg_send_recv(proxyfd, &request, sizeof(request), &response, 
-                        sizeof(response), (SA *)&proxyaddr, sizeof(proxyaddr));
-            update_ack_tmp = (update_ack *)&response;
-            pre_load = tmp_load;
+        update_tmp->load = tmp_load;
+        Dg_send_recv(proxyfd, &request, sizeof(request), &response, 
+                    sizeof(response), (SA *)&proxyaddr, sizeof(proxyaddr));
+        update_ack_tmp = (update_ack *)&response;
+        pre_load = tmp_load;
 #ifdef WORKER_DEBUG
-            printf("UPDATING successfuly.\n");
+        printf("UPDATING successfuly.\n");
 #endif
-        }
-        Pthread_mutex_unlock(&mesg_mutex);
     }
+    Pthread_mutex_unlock(&mesg_mutex);
 }
 
 
@@ -125,11 +122,10 @@ int main(int argc, char **argv)
     this.load   = 0;
     this.status = WKR_RDY;
 
-    Pthread_create(&tid, NULL, request_counter, NULL);
 
     for( ; ; ) {
         connfd = Accept(listenfd, NULL, NULL);
-        if (!Fork()) {
+        if ((childpid = Fork()) == 0) {
             FILE *inFile, *outFile;
             MD5_CTX mdContext;
             unsigned char tmp_md5[MD5_DIGEST_LENGTH];
@@ -223,10 +219,6 @@ int main(int argc, char **argv)
             }
             MD5_Final (result_hdr.md5,&mdContext);
 
-#ifdef WORKER_DEBUG
-                printf("EEEEEEEEE.\n");
-                sleep(10);
-#endif
 
             /* Send result file header */
             p = &result_hdr;
@@ -275,10 +267,11 @@ int main(int argc, char **argv)
                 }
             }
             close(connfd);
+            sleep(1200);
             exit(0);
         }
-
         close(connfd);
+        Pthread_create(&tid, NULL, request_counter, (void *) (intptr_t)childpid);
         Pthread_mutex_lock(&count_mutex);
         load++;
 #ifdef WORKER_DEBUG
