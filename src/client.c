@@ -75,8 +75,8 @@ REGET:
     /* Get file length and md5 */
     inFile = fopen (data_f, "rb");
     if (!inFile) {
+        close(workerfd);
         exit(1);
-        printf("data file open failed");
     }
 
     data_hdr.file_len = 0;

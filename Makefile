@@ -13,7 +13,7 @@ TARGET3 := bin/client
 SRCEXT := c
 SOURCES := $(shell find $(SRCDIR) -type f -name '*.$(SRCEXT)')
 OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
-CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE
+CFLAGS := -Wall -std=gnu99 -D_POSIX_C_SOURCE
 LIB := -lpthread -lssl -lcrypto
 NOLIB :=  
 INC := -I include

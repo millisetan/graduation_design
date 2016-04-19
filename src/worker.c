@@ -136,8 +136,8 @@ int main(int argc, char **argv)
 
             /* Recieve data file header */
             bytes =sizeof(data_hdr);
+            FD_ZERO(&rset);
             while (bytes > 0) {
-                FD_ZERO(&rset);
                 FD_SET(connfd, &rset);
                 time_out.tv_sec = 60;
                 time_out.tv_usec = 0;

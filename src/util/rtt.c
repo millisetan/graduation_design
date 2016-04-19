@@ -1,4 +1,5 @@
 /* include rtt1 */
+#define _POSIX_C_SOURCE 199309L
 #include	"server.h"
 #include    "rtt.h"
 
@@ -23,9 +24,9 @@ rtt_minmax(float rto)
 void
 rtt_init(struct rtt_info *ptr)
 {
-	struct timeval	tv;
+	struct timespec	tv;
 
-	Gettimeofday(&tv, NULL);
+	clock_gettime(CLOCK_REALTIME, &tv);
 	ptr->rtt_base = tv.tv_sec;		/* # sec since 1/1/1970 at start */
 
 	ptr->rtt_rtt    = 0;
@@ -47,10 +48,11 @@ uint32_t
 rtt_ts(struct rtt_info *ptr)
 {
 	uint32_t		ts;
-	struct timeval	tv;
+    struct timespec tv;
 
-	Gettimeofday(&tv, NULL);
-	ts = ((tv.tv_sec - ptr->rtt_base) * 1000) + (tv.tv_usec / 1000);
+	clock_gettime(CLOCK_REALTIME, &tv);
+    
+	ts = ((tv.tv_sec - ptr->rtt_base) * 1000) + (tv.tv_nsec / 1000000);
 	return(ts);
 }
 

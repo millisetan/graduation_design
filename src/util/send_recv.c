@@ -50,13 +50,13 @@ dg_send_recv(int fd, const void *outbuff, size_t outbytes,
 /* end dgsendrecv1 */
 
 /* include dgsendrecv2 */
-	signal(SIGALRM, sig_alrm);
 	rtt_newpack(&rttinfo);		/* initialize for this packet */
 
 sendagain:
 #ifdef	RTT_DEBUG
 	fprintf(stderr, "send %4d: ", sendhdr.seq);
 #endif
+	signal(SIGALRM, sig_alrm);
 	sendhdr.ts = rtt_ts(&rttinfo);
 	Sendmsg(fd, &msgsend, 0);
 

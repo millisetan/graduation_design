@@ -88,6 +88,7 @@ int main()
                         testaddr.sin_addr.s_addr = tmp->addr;
                         if (connect(testfd, (struct sockaddr *)&testaddr,
                                      sizeof(testaddr)) < 0) {
+                            //worker close socket(crash or terminated)
                             workers[i].status = WKR_FLD;
 #ifdef PROXY_DEBUG
                             printf("Worker %d failed\n", i);
@@ -101,6 +102,9 @@ int main()
                                 }
                                 workers[lst_ind].status = WKR_RDY;
                             }
+                        } else {
+                            //worker listen on socket, but stopped.
+
                         }
                         close(testfd);
                         break;
@@ -138,7 +142,6 @@ int main()
                     printf("no availble worker\n");
                 }
 #endif
-                
                 result->port = workers[wkrcur].port;
                 result->addr = workers[wkrcur].addr;
                 SEND_MESG(clifd);
