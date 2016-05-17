@@ -4,14 +4,14 @@
 #define CLIENT_DEBUG
 
 
-void Dg_send_recv(int fd, const void *outbuff, size_t outbytes,
+ssize_t dg_send_recv(int fd, const void *outbuff, size_t outbytes,
              void *inbuff, size_t inbytes,
              const struct sockaddr *destaddr, socklen_t destlen);
 
 int send_and_get (const char *data_f, const char *result_f)
 {
-    int proxyfd, workerfd, is_reget =0, bytes, bytes_read, bytes_writen, error;
-    struct sockaddr_in proxyaddr, workeraddr;
+    int proxyfd[PROXY_NUM], workerfd, workerfd1, is_reget =0, bytes, bytes_read, bytes_writen, error;
+    struct sockaddr_in proxyaddr[PROXY_NUM], workeraddr;
     char buf[BUFSIZE];
     MD5_CTX mdContext;
 	unsigned char tmp_md5[MD5_DIGEST_LENGTH];
@@ -22,13 +22,19 @@ int send_and_get (const char *data_f, const char *result_f)
     request_t request;
     response_t response;
     fd_set rset;
-    socklen_t err_size;
+    socklen_t err_size; 
 
-    proxyfd = Socket(AF_INET, SOCK_DGRAM, 0);
-    memset(&proxyaddr, 0, sizeof(proxyaddr));
-    proxyaddr.sin_family = AF_INET;
-    proxyaddr.sin_port = htons(SERV_PORT);
-    Inet_pton(AF_INET, SERV_IP, &proxyaddr.sin_addr);
+    proxyfd[0] = Socket(AF_INET, SOCK_DGRAM, 0);
+    memset(&proxyaddr[0], 0, sizeof(proxyaddr[0]));
+    proxyaddr[0].sin_family = AF_INET;
+    proxyaddr[0].sin_port = htons(SERV_PORT);
+    Inet_pton(AF_INET, SERV_IP, &proxyaddr[0].sin_addr);
+
+    proxyfd[1] = Socket(AF_INET, SOCK_DGRAM, 0);
+    memset(&proxyaddr[1], 0, sizeof(proxyaddr[1]));
+    proxyaddr[1].sin_family = AF_INET;
+    proxyaddr[1].sin_port = htons(SERV_PORT1);
+    Inet_pton(AF_INET, SERV_IP1, &proxyaddr[1].sin_addr);
 
     signal(SIGPIPE, SIG_IGN);
 REGET:
@@ -42,30 +48,31 @@ REGET:
         get_tmp->type = GET;
     }
     /* connect to server, quit if failed */
-    Dg_send_recv(proxyfd, (void *)&request, sizeof(request), (void *)&response, sizeof(response), (SA *)&proxyaddr, sizeof(proxyaddr));
-    if (is_reget) {
-        reget_ack *reget_ack_tmp = (reget_ack *)&response;
-        if (reget_ack_tmp->ack != 1) {
-            printf("no availble workers!\n");
-            exit(1);
-        }
-        workerfd = Socket(AF_INET, SOCK_STREAM, 0);
-        memset(&workeraddr, 0, sizeof(workeraddr));
-        workeraddr.sin_family = AF_INET;
-        workeraddr.sin_port = reget_ack_tmp->port;
-        workeraddr.sin_addr.s_addr = reget_ack_tmp->addr;
-    } else {
-        get_ack *get_ack_tmp = (get_ack *)&response;
-        if (get_ack_tmp->ack != 1) {
-            printf("no availble workers!\n");
-            exit(1);
-        }
-        workerfd = Socket(AF_INET, SOCK_STREAM, 0);
-        memset(&workeraddr, 0, sizeof(workeraddr));
-        workeraddr.sin_family = AF_INET;
-        workeraddr.sin_port = get_ack_tmp->port;
-        workeraddr.sin_addr.s_addr = get_ack_tmp->addr;
+    printf("random number %d!\n", rand());
+    int init = rand()%PROXY_NUM; 
+    ssize_t ret;
+    for (int i = 0; i < PROXY_NUM; i++) {
+        int index = (init + i)%PROXY_NUM;
+#ifdef CLIENT_DEBUG
+        printf("get worker from proxy %d!\n", index);
+#endif
+        ret = dg_send_recv(proxyfd[index], (void *)&request, sizeof(request), (void *)&response, sizeof(response), (SA *)&proxyaddr[index], sizeof(proxyaddr[index]));
+        if (ret >= 0) break;
     }
+    if (ret < 0) exit(1);
+
+    reget_ack *reget_ack_tmp = (reget_ack *)&response;
+    if (reget_ack_tmp->ack != 1) {
+        printf("no availble workers!\n");
+        exit(1);
+    }
+
+
+    workerfd = Socket(AF_INET, SOCK_STREAM, 0);
+    memset(&workeraddr, 0, sizeof(workeraddr));
+    workeraddr.sin_family = AF_INET;
+    workeraddr.sin_port = reget_ack_tmp->port;
+    workeraddr.sin_addr.s_addr = reget_ack_tmp->addr;
 
     if (connect(workerfd, (struct sockaddr *)&workeraddr, sizeof(workeraddr)) < 0) {
         is_reget = 1;
@@ -87,6 +94,7 @@ REGET:
     }
     MD5_Final (data_hdr.md5,&mdContext);
 
+
     /* send file header(file length and md5) */
 #ifdef CLIENT_DEBUG
     printf("send data header.\n");
@@ -106,7 +114,7 @@ REGET:
         p += bytes_writen;
     }
 
-    /* Send data file */
+
 #ifdef CLIENT_DEBUG
     printf("send data file.\n");
 #endif
@@ -138,7 +146,6 @@ REGET:
 
     }
     Fclose(inFile);
-        
     
     /* recieve file header(file length and md5) */
 #ifdef CLIENT_DEBUG
@@ -174,6 +181,7 @@ REGET:
         getsockopt(workerfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
         if (error) {
             errno = error;
+            printf("%s\n", strerror(errno));
             is_reget = 1;
             close(workerfd);
             goto REGET;
@@ -187,6 +195,7 @@ REGET:
         bytes -= bytes_writen;
         p += bytes_writen;
     }
+
 
 
     /* recieve result file */
@@ -217,6 +226,9 @@ REGET:
         getsockopt(workerfd, SOL_SOCKET, SO_ERROR, &error, &err_size);
         if (error) {
             errno = error;
+#ifdef CLIENT_DEBUG
+            printf("%s\n", strerror(errno));
+#endif
             is_reget = 1;
             fclose(outFile);
             close(workerfd);

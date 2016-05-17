@@ -13,7 +13,7 @@ struct rtt_info {
 };
 
 #define	RTT_RXTMIN      2	/* min retransmit timeout value, seconds */
-#define	RTT_RXTMAX     60	/* max retransmit timeout value, seconds */
+#define	RTT_RXTMAX     23	/* max retransmit timeout value, seconds */
 #define	RTT_MAXNREXMT 	3	/* max #times to retransmit */
 
 				/* function prototypes */

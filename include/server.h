@@ -26,10 +26,15 @@
 
 #define MAX_REQUESTS 10000
 #define MAX_WORKER   100
+#define PROXY_NUM    2
 #define SERV_PORT    5678
 #define SERV_IP      "127.0.0.1"
+#define SERV_PORT1    6678
+#define SERV_IP1      "127.0.0.1"
 #define PROXY_PORT   6789
 #define PROXY_IP     "127.0.0.1"
+#define PROXY_PORT1   7789
+#define PROXY_IP1     "127.0.0.1"
 #define MESG_LEN     100
 #define	MAXLINE	     4096	/* max text line length */
 #define	BUFSIZE	     1024	/* buffer size for reads and writes */
